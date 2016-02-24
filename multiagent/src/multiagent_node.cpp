@@ -1,9 +1,8 @@
-#include <multiagent/headers.h>
-#include <multiagent/master.h>
-#include <multiagent/robot.h>
+#include <multiagent/multiagent.h>
+
 using namespace std;
 
-master::master()
+multiagent::multiagent()
 {
   ros::NodeHandle nh("~");
   nh.param("total_robots",total_robots,0);
@@ -13,16 +12,22 @@ master::master()
   truemap = *(ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(true_map_topic));
   map = *(ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(common_map_topic));
 
-  pubdata();
+  robots.resize(total_robots);
+  populateRobots();
 }
-void master::pubdata()
+void multiagent::populateRobots()
 {
-  ROS_INFO("Initialized master with %d robots",total_robots);
+  robotClass robot;
+  for(int i=0; i<total_robots; i++)
+  {
+    robotClass robot;
+    robots[i].setMap(map);
+  }
 }
 int main(int argc, char **argv)
 {
   ros::init(argc,argv,"master");
-  master multiagent_controller;
-  robot robot;
+  multiagent multiagent_controller;
+  robotClass robot;
   return 0;
 }

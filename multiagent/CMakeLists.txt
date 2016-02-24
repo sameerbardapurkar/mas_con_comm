@@ -9,7 +9,12 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  costmap_2d
 )
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(SBPL REQUIRED sbpl)
+include_directories(${SBPL_INCLUDE_DIRS})
+link_directories(${SBPL_LIBRARY_DIRS})
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
@@ -103,7 +108,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES multiagent
-#  CATKIN_DEPENDS nav_msgs roscpp rospy std_msgs
+#  CATKIN_DEPENDS nav_msgs roscpp rospy std_msgs costmap_2d
 #  DEPENDS system_lib
 )
 
@@ -129,7 +134,7 @@ include_directories(
 # add_dependencies(multiagent ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
- add_executable(multiagent_node src/multiagent_node.cpp)
+ add_executable(multiagent_node src/multiagent_node.cpp src/robotClass.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -137,7 +142,7 @@ include_directories(
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(multiagent_node
-   ${catkin_LIBRARIES}
+   ${catkin_LIBRARIES} ${SBPL_LIBRARIES}
 )
 
 #############
