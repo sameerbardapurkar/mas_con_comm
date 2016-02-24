@@ -1,4 +1,5 @@
 #include<agent/agent_node.h>
+#include<agent/robot.h>
 using namespace std;
 
 agent::agent()
@@ -20,6 +21,6 @@ void agent::pubdata()
 int main(int argc, char **argv)
 {
   ros::init(argc,argv,"agent");
-  agent robot;
+  robot robot;
   return 0;
 }
