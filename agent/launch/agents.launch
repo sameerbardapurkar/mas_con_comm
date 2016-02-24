@@ -1,14 +1,18 @@
 <launch>
-  <node name="true_map" pkg="map_server" type="map_server">
-    <remap from=""
+  <node name="true_map" pkg="map_server" type="map_server" args="$(find agent)/maps/office_unknown.pgm 0.1">
+    <remap from="map" to="/truemap" />
+  </node>
+  <node name="common_map" pkg="map_server" type="map_server" args="$(find agent)/maps/office_known.pgm 0.1">
+    <remap from="map" to="/commonmap" />
+  </node>
   <node name="robot1" pkg="agent" type="agent_node" output="screen" >
     <param name="agent_id" value="1" />
-    <param name="init_map_topic" value="/initialmap" />
+    <param name="true_map_topic" value="/truemap" />
     <param name="common_map_topic" value="/commonmap" />
   </node>
   <node name="robot2" pkg="agent" type="agent_node" output="screen" >
     <param name="agent_id" value="2" />
-    <param name="init_map_topic" value="/initialmap" />
+    <param name="true_map_topic" value="/truemap" />
     <param name="common_map_topic" value="/commonmap" />
   </node>
 </launch>
