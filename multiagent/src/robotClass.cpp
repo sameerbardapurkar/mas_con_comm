@@ -6,23 +6,23 @@ void robotClass::Initialize(int i, std::vector<double> start, std::vector<double
   plannedPath.header.frame_id = std::string("map");
   traversedPath.header.frame_id = std::string("map");
   setStart(start);
-  //ROS_INFO("Initialized start state for robot with ID %d",i);
+  ROS_INFO("Initialized start state for robot with ID %d",i);
   setCurrent(start);
-  //ROS_INFO("Initialized current state for robot with ID %d",i);
+  ROS_INFO("Initialized current state for robot with ID %d",i);
   setGoal(goal);
-  //ROS_INFO("Initialized goal state for robot with ID %d",i);
+  ROS_INFO("Initialized goal state for robot with ID %d",i);
   setMap(map,truemap);
-  //ROS_INFO("Initialized maps for robot with ID %d",i);
+  ROS_INFO("Initialized maps for robot with ID %d",i);
   setPrims(mprimfile);
-  //ROS_INFO("Loaded motion primitives file for robot with ID %d, file is %s",i,(mprimfile.c_str()));
+  ROS_INFO("Loaded motion primitives file for robot with ID %d, file is %s",i,(mprimfile.c_str()));
   setRobotPerimeter(perimeterptsV);
-  //ROS_INFO("Initialized footprint for robot with ID %d",i);
-  ///ROS_INFO("Now initializing environment for robot with ID %d",i);
+  ROS_INFO("Initialized footprint for robot with ID %d",i);
+  ROS_INFO("Now initializing environment for robot with ID %d",i);
   initEnv();
-  //ROS_INFO("..done");
+  ROS_INFO("..done");
   setPlannerParams(epsilon,allocated_time,firstsolution,backwardsearch);
   initializePlanner();
-  //ROS_INFO("Initialized planner parameters for robot with ID %d",i);
+  ROS_INFO("Initialized planner parameters for robot with ID %d",i);
   ROS_INFO("Initialized robot with ID %d",i);
 }
 void robotClass::setPrims(std::string filename)
@@ -61,12 +61,9 @@ void robotClass::setMap(nav_msgs::OccupancyGrid OccupancyMap, nav_msgs::Occupanc
 }
 void robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, nav_msgs::OccupancyGrid map)
 {
+  //Now updating map
   int width = map.info.width;
   int height = map.info.height;
-  //updating start and goal
-  start_id = env.SetStart(current[0],current[1],current[2]);
-  goal_id = env.SetGoal(goal[0],goal[1],goal[2]);
-  //Now updating map
   for (int i=0;i<width;i++)
   {
     for (int j=0;j<height;j++)
@@ -77,6 +74,13 @@ void robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
       }
     }
   }
+  //updating start and goal
+  ROS_INFO("Updating environment for robot %d",id);
+  start_id = env.SetStart(current[0],current[1],current[2]);
+  ROS_INFO("Setting start for robot %d",id);
+  goal_id = env.SetGoal(goal[0],goal[1],goal[2]);
+  ROS_INFO("Setting goal for robot %d",id);
+
 }
 void robotClass::initEnv()
 {
@@ -105,28 +109,58 @@ void robotClass::initializePlanner()
   planner->set_initialsolution_eps(plannerEpsilon);
   planner->set_search_mode(bSearchUntilFirstSolution);
 }
-double robotClass::makePlan()
+int robotClass::makePlan()
 {
+  //initializePlanner();
+  planner->set_initialsolution_eps(plannerEpsilon);
+  planner->set_search_mode(bSearchUntilFirstSolution);
+  planner->force_planning_from_scratch();
   bool plan_success;
+  std::vector<double> start_state_planner = stateIDtoXYCoord(start_id);
+  std::vector<double> goal_state_planner = stateIDtoXYCoord(goal_id);
+  ROS_INFO("[planner] Setting start to start_id %d, with location of x:%f y:%f theta:%f"
+        ,start_id,start_state_planner[0],start_state_planner[1],start_state_planner[2]);
   planner->set_start(start_id);
+  ROS_INFO("[planner] Setting goal to goal_id %d, with location of x:%f y:%f theta:%f"
+        ,goal_id,goal_state_planner[0],goal_state_planner[1],goal_state_planner[2]);
   planner->set_goal(goal_id);
+  ROS_INFO("set_goal,now planning");
+  solution_state_IDs.clear();
+  int solcost;
   plan_success = planner->replan(allocated_time_secs,&solution_state_IDs,&solcost);
-  env.ConvertStateIDPathintoXYThetaPath(&solution_state_IDs,&xythetaPath);
-  env.GetActionsFromStateIDPath(&solution_state_IDs, &action_list);
+  ROS_INFO("Planning done");
+
   if (plan_success == true)
   {
     ROS_INFO("Plan found for robot %d",id);
+    if(solution_state_IDs.size() == 0)
+    {
+      ROS_INFO("Invalid Path!");
+    }
+    for(int i = 0; i<solution_state_IDs.size(); i++)
+    {
+      ROS_INFO("Solution state ID %d",solution_state_IDs[i]);
+    }
+    xythetaPath.clear();
+    env.ConvertStateIDPathintoXYThetaPath(&solution_state_IDs,&xythetaPath);
+    ROS_INFO("Converted to xypath");
+    for(int i = 0; i<xythetaPath.size(); i++)
+    {
+    ROS_INFO("x:%f  y:%f  theta:%f",xythetaPath[i].x,xythetaPath[i].y,xythetaPath[i].theta);
+    }
+    env.GetActionsFromStateIDPath(&solution_state_IDs, &action_list);
     plannedPath.poses.clear();
     for(int i = 0; i<solution_state_IDs.size(); i++)
     {
       plannedPath.poses.push_back(locationToPose(stateIDtoXYCoord(solution_state_IDs[i])));
-      //ROS_INFO("x:%f  y:%f  theta:%f",xythetaPath[i].x,xythetaPath[i].y,xythetaPath[i].theta);
     }
+
   }
   else
   {
     ROS_INFO("Failed to find plan");
   }
+  ROS_INFO("Sol cost %d",solcost);
   return(solcost);
 }
 void robotClass::advanceRobot()
@@ -137,6 +171,7 @@ void robotClass::advanceRobot()
   setCurrent(current_loc);
   ROS_INFO("Advancing robot %d to x:%f y:%f theta:%f",id,current_loc[0],current_loc[1],current_loc[2]);
   ROS_INFO("Pose orientation is w:%f x:%f y:%f z:%f",currentPose.pose.orientation.w,currentPose.pose.orientation.x,currentPose.pose.orientation.y,currentPose.pose.orientation.z);
+  revealMap();
   cost_expended += action_list[0].cost;
 }
 void robotClass::revealMap()
@@ -145,9 +180,9 @@ void robotClass::revealMap()
   double cellsize = map.info.resolution;
   int row = int(current_x/cellsize);
   int col = int(current_y/cellsize);
-  for (int i = row - 20; i<row + 20; i++)
+  for (int i = row - 4; i<row + 4; i++)
     {
-      for (int j = col - 20; j<col + 20; j++)
+      for (int j = col - 4; j<col + 4; j++)
       {
         if((map.data[j*map.info.width + i] < truemap.data[j*map.info.width + i])&&(i>0&&i<map.info.width&&j>0&&j<map.info.height))
         {
@@ -155,6 +190,7 @@ void robotClass::revealMap()
         }
       }
     }
+  ROS_INFO("Map Revealed for robot %d",id);
 }
 std::vector<double> robotClass::stateIDtoXYCoord(int state_id)
 {
@@ -220,4 +256,20 @@ nav_msgs::Path robotClass::getPlannedPath()
 nav_msgs::Path robotClass::getTraversedPath()
 {
   return traversedPath;
+}
+double robotClass::getExpendedCost()
+{
+  return cost_expended;
+}
+void robotClass::resetExpendedCost()
+{
+  cost_expended = 0;
+}
+double robotClass::getOriginalCost()
+{
+  return(original_cost);
+}
+void robotClass::setOriginalCost(int value)
+{
+  original_cost = value;
 }

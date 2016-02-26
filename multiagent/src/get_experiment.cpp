@@ -61,16 +61,16 @@ std::vector<sbpl_2Dpt_t> multiagent::get_footprint()
 {
     // TODO: hardcoded for now.
     std::vector<sbpl_2Dpt_t> footprint(5);
-    footprint[0].x = -0.325;
-    footprint[0].y = -0.425;
-    footprint[1].x = -0.325;
-    footprint[1].y = 0.425;
-    footprint[2].x = 0.325;
-    footprint[2].y = 0.425;
-    footprint[3].x = 0.46;
+    footprint[0].x = -0.0325;
+    footprint[0].y = -0.0425;
+    footprint[1].x = -0.0325;
+    footprint[1].y = 0.0425;
+    footprint[2].x = 0.0325;
+    footprint[2].y = 0.0425;
+    footprint[3].x = 0.046;
     footprint[3].y = 0.0;
-    footprint[4].x = 0.325;
-    footprint[4].y = -0.425;
+    footprint[4].x = 0.0325;
+    footprint[4].y = -0.0425;
     return footprint;
 }
 

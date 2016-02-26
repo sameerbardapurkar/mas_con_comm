@@ -3,7 +3,7 @@
 class robotClass{
 public:
   void setMap(nav_msgs::OccupancyGrid OccupancyMap, nav_msgs::OccupancyGrid trueOccupancyMap);
-  double makePlan();
+  int makePlan();
   void setStart(std::vector<double> location);
   void setGoal(std::vector<double> location);
   void setCurrent(std::vector<double> location);
@@ -27,6 +27,10 @@ public:
   geometry_msgs::PoseStamped getGoalPose();
   nav_msgs::Path getPlannedPath();
   nav_msgs::Path getTraversedPath();
+  double getExpendedCost();
+  void resetExpendedCost();
+  double getOriginalCost();
+  void setOriginalCost(int value);
 protected:
   //Robot related stuff
   int id;
@@ -70,17 +74,18 @@ protected:
   int goal_id;
   int current_id;
   std::vector<int> solution_state_IDs;
-  int solcost;
   bool bSearchUntilFirstSolution;
   bool bBackwardSearch;
-  SBPLPlanner* planner;
   std::vector< EnvNAVXYTHETALAT3Dpt_t > xythetaPath;
   std::vector<EnvNAVXYTHETALATAction_t> action_list;
   //Plan Specific Variables
   double cost_expended;
+  int original_cost;
+  SBPLPlanner* planner;
 
   //ROS_STUFF
   geometry_msgs::PoseStamped currentPose;
   nav_msgs::Path plannedPath;
   nav_msgs::Path traversedPath;
+  geometry_msgs::Polygon footprint;
 };

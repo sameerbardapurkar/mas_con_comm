@@ -9,7 +9,7 @@ protected:
   std::string config_file;
 
   nav_msgs::OccupancyGrid truemap;
-  nav_msgs::OccupancyGrid map;
+  nav_msgs::OccupancyGrid commonmap;
 
   std::vector<robotClass> robots_;
 
@@ -45,6 +45,11 @@ protected:
   std::vector<ros::Publisher> plannedPathPublisher_;
   std::vector<ros::Publisher> traversedPathPublisher_;
   std::vector<ros::Publisher> polygonPublisher_;
+  ros::Publisher commonMapPublisher_;
+  double communicationEpsilon;
+  ros::NodeHandle nh;
+  bool communicationRequired;
+  bool resetCostsRequired;
 
 
 public:
@@ -55,6 +60,8 @@ public:
   bool get_exp_config(const char* filename,multiagent::experiment_config& config);
   std::vector<sbpl_2Dpt_t> get_footprint();
   void print_exp_config(const multiagent::experiment_config& config);
-  ros::NodeHandle nh;
+  void publish(int i);
+  void takeStep();
+  void mergeMaps();
 
 };
