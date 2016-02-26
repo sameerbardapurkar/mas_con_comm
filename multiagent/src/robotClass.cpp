@@ -68,10 +68,7 @@ void robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
   {
     for (int j=0;j<height;j++)
     {
-      if (map.data[j*width + i] == 100)
-      {
-        env.UpdateCost(i,j,100);
-      }
+      env.UpdateCost(i,j,map.data[j*width + i]);
     }
   }
   //updating start and goal
