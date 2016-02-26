@@ -3,15 +3,27 @@ void robotClass::Initialize(int i, std::vector<double> start, std::vector<double
 {
   id = i;
   cost_expended = 0;
+  plannedPath.header.frame_id = std::string("map");
+  traversedPath.header.frame_id = std::string("map");
   setStart(start);
+  //ROS_INFO("Initialized start state for robot with ID %d",i);
   setCurrent(start);
+  //ROS_INFO("Initialized current state for robot with ID %d",i);
   setGoal(goal);
+  //ROS_INFO("Initialized goal state for robot with ID %d",i);
   setMap(map,truemap);
+  //ROS_INFO("Initialized maps for robot with ID %d",i);
   setPrims(mprimfile);
+  //ROS_INFO("Loaded motion primitives file for robot with ID %d, file is %s",i,(mprimfile.c_str()));
   setRobotPerimeter(perimeterptsV);
+  //ROS_INFO("Initialized footprint for robot with ID %d",i);
+  //ROS_INFO("Now initializing environment for robot with ID %d",i);
   initEnv();
+  //ROS_INFO("..done");
   setPlannerParams(epsilon,allocated_time,firstsolution,backwardsearch);
-  ROS_INFO("Initialized robot with ID %d",i);
+  initializePlanner();
+  //ROS_INFO("Initialized planner parameters for robot with ID %d",i);
+  //ROS_INFO("Initialized robot with ID %d",i);
 }
 void robotClass::setPrims(std::string filename)
 {
@@ -49,13 +61,9 @@ void robotClass::setMap(nav_msgs::OccupancyGrid OccupancyMap, nav_msgs::Occupanc
 }
 void robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, nav_msgs::OccupancyGrid map)
 {
+  //Now updating map
   int width = map.info.width;
   int height = map.info.height;
-
-  //updating start and goal
-  start_id = env.SetStart(current[0],current[1],current[2]);
-  goal_id = env.SetGoal(goal[0],goal[1],goal[2]);
-  //Now updating map
   for (int i=0;i<width;i++)
   {
     for (int j=0;j<height;j++)
@@ -66,43 +74,27 @@ void robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
       }
     }
   }
+  //updating start and goal
+  ////ROS_INFO("Updating environment for robot %d",id);
+  start_id = env.SetStart(current[0],current[1],current[2]);
+  ////ROS_INFO("Setting start for robot %d",id);
+  goal_id = env.SetGoal(goal[0],goal[1],goal[2]);
+  ////ROS_INFO("Setting goal for robot %d",id);
+
 }
 void robotClass::initEnv()
 {
   int width = map.info.width;
   int height = map.info.height;
   double cellsize_m = map.info.resolution;
-
-  double startx = start[0];
-  double starty = start[1];
-  double starttheta = start[2];
-
-  double goalx = goal[0];
-  double goaly = goal[1];
-  double goaltheta = goal[2];
-
+  cellsize = cellsize_m;
+  theta_disc = 8;
   const char* sMotPrimFile = mprimfile.c_str();
   const char* cost_possibly_circumscribed = std::string("cost_possibly_circumscribed_thresh").c_str();
   const char* cost_inscribed = std::string("cost_inscribed_thresh").c_str();
-
+  env.InitializeEnv (width, height, NULL/*mapdata, initializing to totally free map*/, /*startx*/0,/*starty*/ 0, /*starttheta*/0,/*goalx*/ 0,/*goaly*/ 0,/*goaltheta*/ 0, 0.0, 0.0, 0.0, perimeterptsV, cellsize_m, /*nominal_vel*/ 0.1, /*timetoturn45degsinplace_secs*/ 2, /*obsthresh*/ 100, sMotPrimFile);
   env.SetEnvParameter(cost_possibly_circumscribed,100);
   env.SetEnvParameter(cost_inscribed,100);
-  env.InitializeEnv (width, height, NULL/*mapdata, initializing to totally free map*/, startx, starty, starttheta, goalx, goaly, goaltheta, 0.1, 0.1, 0.1, perimeterptsV, cellsize_m, /*nominal_vel*/ 0.1, /*timetoturn45degsinplace_secs*/ 2, /*obsthresh*/ 100, sMotPrimFile);
-
-  //updating start and goal
-  start_id = env.SetStart(current[0],current[1],current[2]);
-  goal_id = env.SetGoal(goal[0],goal[1],goal[2]);
-  //Now updating map
-  for (int i=0;i<width;i++)
-  {
-    for (int j=0;j<height;j++)
-    {
-      if (map.data[j*width + i] == 100)
-      {
-        env.UpdateCost(i,j,100);
-      }
-    }
-  }
 }
 void robotClass::setPlannerParams(double epsilon, double allocated_time, bool firstsolution, bool backwardsearch)
 {
@@ -111,33 +103,77 @@ void robotClass::setPlannerParams(double epsilon, double allocated_time, bool fi
   bSearchUntilFirstSolution = firstsolution;
   bBackwardSearch = backwardsearch;
 }
-double robotClass::makePlan()
+void robotClass::initializePlanner()
 {
-  SBPLPlanner* planner = new ARAPlanner(&env, bBackwardSearch);
+  planner = new ARAPlanner(&env, bBackwardSearch);
   planner->set_initialsolution_eps(plannerEpsilon);
   planner->set_search_mode(bSearchUntilFirstSolution);
+}
+int robotClass::makePlan()
+{
+  //initializePlanner();
+  planner->set_initialsolution_eps(plannerEpsilon);
+  planner->set_search_mode(bSearchUntilFirstSolution);
+  planner->force_planning_from_scratch();
+  bool plan_success;
+  std::vector<double> start_state_planner = stateIDtoXYCoord(start_id);
+  std::vector<double> goal_state_planner = stateIDtoXYCoord(goal_id);
+  //ROS_INFO("[planner] Setting start to start_id %d, with location of x:%f y:%f theta:%f"
+      //  ,start_id,start_state_planner[0],start_state_planner[1],start_state_planner[2]);
   planner->set_start(start_id);
+  //ROS_INFO("[planner] Setting goal to goal_id %d, with location of x:%f y:%f theta:%f"
+      //  ,goal_id,goal_state_planner[0],goal_state_planner[1],goal_state_planner[2]);
   planner->set_goal(goal_id);
-  planner->replan(allocated_time_secs,&solution_state_IDs,&solcost);
+  //ROS_INFO("set_goal,now planning");
+  solution_state_IDs.clear();
+  int solcost;
+  plan_success = planner->replan(allocated_time_secs,&solution_state_IDs,&solcost);
+  //ROS_INFO("Planning done");
+
+  if (plan_success == true)
+  {
+    //ROS_INFO("Plan found for robot %d",id);
+    if(solution_state_IDs.size() == 0)
+    {
+      //ROS_INFO("Invalid Path!");
+    }
+    for(int i = 0; i<solution_state_IDs.size(); i++)
+    {
+      //ROS_INFO("Solution state ID %d",solution_state_IDs[i]);
+    }
+    xythetaPath.clear();
+    env.ConvertStateIDPathintoXYThetaPath(&solution_state_IDs,&xythetaPath);
+    //ROS_INFO("Converted to xypath");
+    for(int i = 0; i<xythetaPath.size(); i++)
+    {
+    //ROS_INFO("x:%f  y:%f  theta:%f",xythetaPath[i].x,xythetaPath[i].y,xythetaPath[i].theta);
+    }
+    env.GetActionsFromStateIDPath(&solution_state_IDs, &action_list);
+    plannedPath.poses.clear();
+    for(int i = 0; i<solution_state_IDs.size(); i++)
+    {
+      plannedPath.poses.push_back(locationToPose(stateIDtoXYCoord(solution_state_IDs[i])));
+    }
+
+  }
+  else
+  {
+    //ROS_INFO("Failed to find plan");
+  }
+  //ROS_INFO("Sol cost %d",solcost);
   return(solcost);
 }
 void robotClass::advanceRobot()
 {
-  int travel_cost;
-  std::vector<int> travel_state_IDs;
-  env.ConvertStateIDPathintoXYThetaPath(&solution_state_IDs,&xythetaPath);
-  std::vector<double> current_loc;
-  current_loc[0] = xythetaPath[1].x;
-  current_loc[1] = xythetaPath[1].y;
-  current_loc[2] = xythetaPath[1].theta;
+  std::vector<double> current_loc = stateIDtoXYCoord(solution_state_IDs[1]);
+  currentPose = locationToPose(current);
+  traversedPath.poses.push_back(currentPose);
   setCurrent(current_loc);
-  SBPLPlanner* cost_calc_planner = new ARAPlanner(&env, bBackwardSearch);
-  cost_calc_planner->set_initialsolution_eps(plannerEpsilon);
-  cost_calc_planner->set_search_mode(bSearchUntilFirstSolution);
-  cost_calc_planner->set_start(solution_state_IDs[0]);
-  cost_calc_planner->set_goal(solution_state_IDs[1]);
-  cost_calc_planner->replan(allocated_time_secs,&travel_state_IDs,&travel_cost);
-  cost_expended += travel_cost;
+  perimeterToFootprint();
+  //ROS_INFO("Advancing robot %d to x:%f y:%f theta:%f",id,current_loc[0],current_loc[1],current_loc[2]);
+  //ROS_INFO("Pose orientation is w:%f x:%f y:%f z:%f",currentPose.pose.orientation.w,currentPose.pose.orientation.x,currentPose.pose.orientation.y,currentPose.pose.orientation.z);
+  revealMap();
+  cost_expended += action_list[0].cost;
 }
 void robotClass::revealMap()
 {
@@ -155,4 +191,105 @@ void robotClass::revealMap()
         }
       }
     }
+  //ROS_INFO("Map Revealed for robot %d",id);
+}
+std::vector<double> robotClass::stateIDtoXYCoord(int state_id)
+{
+  std::vector<double> xypoint;
+  int x_state, y_state, theta_state;
+  double x_cont,y_cont,theta_cont;
+  env.GetCoordFromState(state_id,x_state,y_state,theta_state);
+  x_cont = x_state*cellsize + 0.5*cellsize;
+  y_cont = y_state*cellsize + 0.5*cellsize;
+  theta_cont = theta_state*(M_PI/theta_disc);
+  xypoint.push_back(x_cont);
+  xypoint.push_back(y_cont);
+  xypoint.push_back(theta_cont);
+  return(xypoint);
+}
+std::vector<double> robotClass::getStart()
+{
+  return start;
+}
+std::vector<double> robotClass::getCurrent()
+{
+  return current;
+}
+std::vector<double> robotClass::getGoal()
+{
+  return goal;
+}
+nav_msgs::OccupancyGrid robotClass::getMap()
+{
+  return map;
+}
+geometry_msgs::PoseStamped robotClass::locationToPose(std::vector<double> location)
+{
+  geometry_msgs::PoseStamped robot_pose;
+  robot_pose.header.frame_id = std::string("map");
+  robot_pose.pose.position.x = location[0];
+  robot_pose.pose.position.y = location[1];
+  robot_pose.pose.position.z = 0;
+
+  robot_pose.pose.orientation.w = std::cos(0.5*location[2]);
+  robot_pose.pose.orientation.x = 0;
+  robot_pose.pose.orientation.y = 0;
+  robot_pose.pose.orientation.z = std::sin(0.5*location[2]);
+
+  return(robot_pose);
+}
+geometry_msgs::PoseStamped robotClass::getCurrentPose()
+{
+  return locationToPose(current);
+}
+geometry_msgs::PoseStamped robotClass::getStartPose()
+{
+  return locationToPose(start);
+}
+geometry_msgs::PoseStamped robotClass::getGoalPose()
+{
+  return locationToPose(goal);
+}
+nav_msgs::Path robotClass::getPlannedPath()
+{
+  return plannedPath;
+}
+nav_msgs::Path robotClass::getTraversedPath()
+{
+  return traversedPath;
+}
+double robotClass::getExpendedCost()
+{
+  return cost_expended;
+}
+void robotClass::resetExpendedCost()
+{
+  cost_expended = 0;
+}
+double robotClass::getOriginalCost()
+{
+  return(original_cost);
+}
+void robotClass::setOriginalCost(int value)
+{
+  original_cost = value;
+}
+void robotClass::perimeterToFootprint()
+{
+  footprint.header.frame_id = std::string("map");
+  footprint.polygon.points.clear();
+  geometry_msgs::Point32 point;
+  for(int i=0;i<perimeterptsV.size();i++)
+  {
+      point.x = std::cos(current[2])*perimeterptsV[i].x - std::sin(current[2])*perimeterptsV[i].y;
+      point.y = std::sin(current[2])*perimeterptsV[i].x + std::cos(current[2])*perimeterptsV[i].y;
+      point.z = 0;
+      point.x = point.x + current[0];
+      point.y = point.y + current[1];
+      footprint.polygon.points.push_back(point);
+  }
+}
+geometry_msgs::PolygonStamped robotClass::getFootprint()
+{
+  return(footprint);
 }

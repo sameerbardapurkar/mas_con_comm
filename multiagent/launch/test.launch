@@ -5,10 +5,11 @@
   <node name="common_map" pkg="map_server" type="map_server" args="$(find multiagent)/maps/office_known.pgm 0.1">
     <remap from="map" to="/commonmap" />
   </node>
-  <node name="multiagent_node" pkg="multiagent" type="multiagent_node" output="screen" >
+  <node name="multiagent_node" pkg="multiagent" type="multiagent_node" output="screen">
     <param name="total_robots" value="2" />
     <param name="true_map_topic" value="/truemap" />
     <param name="common_map_topic" value="/commonmap" />
     <param name="config_file" value="$(find multiagent)/config/experiment.yaml" />
+    <param name="communication_epsilon" value="5"/>
   </node>
 </launch>

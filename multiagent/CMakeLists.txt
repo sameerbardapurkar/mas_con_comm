@@ -9,6 +9,7 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
+  geometry_msgs
 
 )
 find_package(PkgConfig REQUIRED)
@@ -108,7 +109,7 @@ link_directories(${SBPL_LIBRARY_DIRS})
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES multiagent
-#  CATKIN_DEPENDS nav_msgs roscpp rospy std_msgs
+#  CATKIN_DEPENDS nav_msgs roscpp rospy std_msgs geometry_msgs
 #  DEPENDS system_lib
 )
 

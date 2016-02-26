@@ -3,7 +3,7 @@
 class robotClass{
 public:
   void setMap(nav_msgs::OccupancyGrid OccupancyMap, nav_msgs::OccupancyGrid trueOccupancyMap);
-  double makePlan();
+  int makePlan();
   void setStart(std::vector<double> location);
   void setGoal(std::vector<double> location);
   void setCurrent(std::vector<double> location);
@@ -15,6 +15,25 @@ public:
   void setPlannerParams(double epsilon, double allocated_time, bool firstsolution, bool backwardsearch);
   void advanceRobot();
   void revealMap();
+  void initializePlanner();
+  std::vector<double> stateIDtoXYCoord(int state_id);
+  std::vector<double> getStart();
+  std::vector<double> getCurrent();
+  std::vector<double> getGoal();
+  nav_msgs::OccupancyGrid getMap();
+  geometry_msgs::PoseStamped locationToPose(std::vector<double> location);
+  geometry_msgs::PoseStamped getCurrentPose();
+  geometry_msgs::PoseStamped getStartPose();
+  geometry_msgs::PoseStamped getGoalPose();
+  nav_msgs::Path getPlannedPath();
+  nav_msgs::Path getTraversedPath();
+  double getExpendedCost();
+  void resetExpendedCost();
+  double getOriginalCost();
+  void setOriginalCost(int value);
+  void perimeterToFootprint();
+  geometry_msgs::PolygonStamped getFootprint();
+
 protected:
   //Robot related stuff
   int id;
@@ -48,22 +67,28 @@ protected:
   int cost_circumscribed;
 
   //SBPL related stuff
+  double cellsize;
+  int theta_disc;
   std::vector<sbpl_2Dpt_t> perimeterptsV;
   EnvironmentNAVXYTHETALAT env;
   double plannerEpsilon;
   double allocated_time_secs;
   int start_id;
   int goal_id;
+  int current_id;
   std::vector<int> solution_state_IDs;
-  int solcost;
   bool bSearchUntilFirstSolution;
   bool bBackwardSearch;
   std::vector< EnvNAVXYTHETALAT3Dpt_t > xythetaPath;
+  std::vector<EnvNAVXYTHETALATAction_t> action_list;
   //Plan Specific Variables
   double cost_expended;
+  int original_cost;
+  SBPLPlanner* planner;
 
-  //ROS_PUB_SUB
-  ros::Publisher posePublisher;
-  ros::Publisher robotPolygonPublisher;
-
+  //ROS_STUFF
+  geometry_msgs::PoseStamped currentPose;
+  nav_msgs::Path plannedPath;
+  nav_msgs::Path traversedPath;
+  geometry_msgs::PolygonStamped footprint;
 };
