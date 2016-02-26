@@ -5,6 +5,7 @@ using namespace std;
 multiagent::multiagent()
 {
   ros::NodeHandle nh("~");
+  ros::Duration(3).sleep();
   nh.param("total_robots",total_robots,0);
   nh.param("true_map_topic",true_map_topic,std::string("/truemap"));
   nh.param("common_map_topic",common_map_topic,std::string("/commonmap"));
