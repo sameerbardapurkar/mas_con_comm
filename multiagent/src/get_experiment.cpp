@@ -29,14 +29,45 @@ std::string get_primitive_file(const int robot_id, const std::string &base_path)
     case 2: return base_path + std::string("/config/robot2.mprim");
         break;
     }
-}  
+}
+}
 
+bool multiagent::get_exp_config_header(const char* filename,
+                                       multiagent::experiment_config &config) const
+{
+    config.mprim_filenames.clear();
+    FILE* fin = fopen(filename,"r");
+    if(!fin){
+        ROS_ERROR("file %s does not exist\n", filename);
+        return false;
+    }
+    // Motion primitive filenames.
+    std::vector<std::string> mprim_filenames;
+    fscanf(fin,"experiments:\n\n");
+    fscanf(fin, "  num_robots: %d\n", &config.num_robots);    
+    config.mprim_filenames.clear();
+    config.footprints.clear();
+    // Read motion primitive files.
+    for (int i = 0; i < config.num_robots; ++i){
+        int robot_id;
+        if(fscanf(fin, "  robot_id: %d", &robot_id) <= 0)
+            { ROS_INFO("ID failed");
+            return false;        
+    }
+        config.mprim_filenames.push_back(utils::get_primitive_file(robot_id, base_folder_));
+        config.footprints.push_back(utils::get_footprint(robot_id));
+    }
+
+    if(fscanf(fin, "  num_tests: %d\n", &config.num_tests) <= 0)
+        return false;
+    return true;
 }
 
 bool multiagent::get_exp_config(const char* filename,                                
                                 const int desired_test_number,
-                                multiagent::experiment_config &config)
+                                multiagent::experiment_config &config) const
 {
+    ROS_INFO("Reading header with test # %d", desired_test_number);
     config.mprim_filenames.clear();
     FILE* fin = fopen(filename,"r");
     if(!fin){
@@ -53,10 +84,12 @@ bool multiagent::get_exp_config(const char* filename,
     for (int i = 0; i < config.num_robots; ++i){
         int robot_id;
         if(fscanf(fin, "  robot_id: %d", &robot_id) <= 0)
-            break;        
+            return false;        
         config.mprim_filenames.push_back(utils::get_primitive_file(robot_id, base_folder_));
         config.footprints.push_back(utils::get_footprint(robot_id));
     }
+    if(fscanf(fin, "  num_tests: %d", &config.num_tests) <= 0)
+        return false;
     int test_num = 0;
     while(fin)
     {

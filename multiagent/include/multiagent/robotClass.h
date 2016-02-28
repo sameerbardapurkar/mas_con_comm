@@ -27,7 +27,7 @@ public:
   geometry_msgs::PoseStamped getGoalPose();
   nav_msgs::Path getPlannedPath();
   nav_msgs::Path getTraversedPath();
-  double getExxpendedCost();
+  double getExpendedCost();
   void resetExpendedCost();
   double getOriginalCost();
   void setOriginalCost(int value);

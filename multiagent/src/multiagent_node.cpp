@@ -27,60 +27,71 @@ void multiagent::start_experiments(const int num_starts_per_map,
                                    const std::vector<int> map_ids,
                                    const std::vector<int> num_robots)
 {
-    for (int expt_i = 0; expt_i < map_ids.size(); ++expt_i)
+    // Each expt file is based on 1 map id and a fixed team of robots.
+    for (int expt_file_ctr = 0; expt_file_ctr < map_ids.size(); ++expt_file_ctr)
     {
         // Read config yaml, based on map id and # of robots.
         multiagent::experiment_config config;
         char fname[80];    
-        sprintf(fname, "%s/config/r_%dmap_%d.yaml", base_folder_.c_str(), num_robots[expt_i], map_ids[expt_i]);
-        ROS_INFO("reading %s", fname);       
-        const bool succ = get_exp_config(fname, 1, config);
+        sprintf(fname, "%s/config/r_%dmap_%d.yaml", base_folder_.c_str(), 
+                num_robots[expt_file_ctr], map_ids[expt_file_ctr]);
+        ROS_INFO("reading %s", fname);     
+        bool succ = false;
+        succ = get_exp_config_header(fname, config);
         if (!succ)
+        {
+            ROS_ERROR("Error reading config.");
+            continue;
+        }
+        // test_nums start at 1, coz matlab.
+        for(int test_num = 1; test_num <= config.num_tests; test_num++)
+        {
+            succ = get_exp_config(fname, test_num, config);
+            if (!succ)
             {
                 ROS_ERROR("Error reading config.");
                 continue;
             }
-        char map_fname[80];
-        double origin[3];
-        origin[0] = 0;
-        origin[1] = 0;
-        origin[2] = 0;
-        sprintf(map_fname, "%s/maps/%s", base_folder_.c_str(), config.map_known.c_str());
-        ROS_INFO("setting common map from %s", map_fname);
-        map_reader::loadMapFromFile(commonmap, map_fname, 0.1, // resolution
-                                    false, 0.65, // occupied_threshold
-                                    0.196, // free thresh
-                                    origin,
-                                    true // trinary
-                                    );        
-        sprintf(map_fname, "%s/maps/%s", base_folder_.c_str(), config.map_unknown.c_str());
-        ROS_INFO("setting true map from %s", map_fname);
-        map_reader::loadMapFromFile(truemap, map_fname, 0.1, // resolution
-                                    false, 0.65, // occupied_threshold
-                                    0.196, // free thresh
-                                    origin,
-                                    true // trinary
-                                    );
+            char map_fname[80];
+            double origin[3];
+            origin[0] = 0;
+            origin[1] = 0;
+            origin[2] = 0;
+            sprintf(map_fname, "%s/maps/%s", base_folder_.c_str(), config.map_known.c_str());
+            ROS_INFO("setting common map from %s", map_fname);
+            map_reader::loadMapFromFile(commonmap, map_fname, 0.1, // resolution
+                                        false, 0.65, // occupied_threshold
+                                        0.196, // free thresh
+                                        origin,
+                                        true);    
+            sprintf(map_fname, "%s/maps/%s", base_folder_.c_str(), config.map_unknown.c_str());
+            ROS_INFO("setting true map from %s", map_fname);
+            map_reader::loadMapFromFile(truemap, map_fname, 0.1, // resolution
+                                        false, 0.65, // occupied_threshold
+                                        0.196, // free thresh
+                                        origin,
+                                        true);
 
-        total_robots = config.num_robots;
-        robots_.resize(total_robots);
-        commonMapPublisher_ = nh.advertise<nav_msgs::OccupancyGrid>("/mergedMap",1000);
-        startPosePublisher_.resize(total_robots);
-        goalPosePublisher_.resize(total_robots);
-        currentPosePublisher_.resize(total_robots);
-        mapPublisher_.resize(total_robots);
-        plannedPathPublisher_.resize(total_robots);
-        traversedPathPublisher_.resize(total_robots);
-        polygonPublisher_.resize(total_robots);
-        communicationRequired = true;
+            total_robots = config.num_robots;
+            robots_.resize(total_robots);
+            commonMapPublisher_ = nh.advertise<nav_msgs::OccupancyGrid>("/mergedMap",1000);
+            startPosePublisher_.resize(total_robots);
+            goalPosePublisher_.resize(total_robots);
+            currentPosePublisher_.resize(total_robots);
+            mapPublisher_.resize(total_robots);
+            plannedPathPublisher_.resize(total_robots);
+            traversedPathPublisher_.resize(total_robots);
+            polygonPublisher_.resize(total_robots);
+            communicationRequired = true;
   
-        for (int i = 0; i < num_starts_per_map; ++i)
+            for (int i = 0; i < num_starts_per_map; ++i)
             {
                 set_up_experiment(config);        
                 ROS_INFO("Successfully setup experiment.");
                 //simulate(); // UNCOMMENT SBPL FUNC
                 // WRITE RESULTS HERE.
             }        
+        }
     }
     ROS_INFO("Successfully setup experiment.");    
 }
