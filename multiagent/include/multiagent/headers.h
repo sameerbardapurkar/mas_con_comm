@@ -3,12 +3,15 @@
 #include<iostream>
 #include<string>
 
+#ifndef ROS
+#define ROS
+#endif
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <nav_msgs/OccupancyGrid.h>
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
-#include <geometry_msgs/Polygon.h>
+#include <geometry_msgs/PolygonStamped.h>
 
 
 
