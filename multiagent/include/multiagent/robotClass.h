@@ -3,14 +3,14 @@
 class robotClass{
 public:
   void setMap(nav_msgs::OccupancyGrid OccupancyMap, nav_msgs::OccupancyGrid trueOccupancyMap);
-  int makePlan();
+  bool makePlan(int &solCost);
   void setStart(std::vector<double> location);
   void setGoal(std::vector<double> location);
   void setCurrent(std::vector<double> location);
   void setPrims(std::string filename);
   void setRobotPerimeter(std::vector<sbpl_2Dpt_t> footprint);
   void Initialize(int i, std::vector<double> start, std::vector<double> goal, nav_msgs::OccupancyGrid map, nav_msgs::OccupancyGrid truemap, std::string mprimfile, std::vector<sbpl_2Dpt_t> perimeterptsV, double epsilon, double allocated_time, bool firstsolution, bool backwardsearch);
-  void updateEnv(std::vector<double> start, std::vector<double> goal, nav_msgs::OccupancyGrid map);
+  bool updateEnv(std::vector<double> start, std::vector<double> goal, nav_msgs::OccupancyGrid map);
   void initEnv();
   void setPlannerParams(double epsilon, double allocated_time, bool firstsolution, bool backwardsearch);
   void advanceRobot();
@@ -27,7 +27,7 @@ public:
   geometry_msgs::PoseStamped getGoalPose();
   nav_msgs::Path getPlannedPath();
   nav_msgs::Path getTraversedPath();
-  double getExpendedCost();
+  double getExxpendedCost();
   void resetExpendedCost();
   double getOriginalCost();
   void setOriginalCost(int value);

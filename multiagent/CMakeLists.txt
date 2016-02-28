@@ -135,7 +135,8 @@ include_directories(
 # add_dependencies(multiagent ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
- add_executable(multiagent_node src/multiagent_node.cpp src/robotClass.cpp src/get_experiment.cpp)
+ add_executable(multiagent_node src/multiagent_node.cpp src/robotClass.cpp src/get_experiment.cpp 
+   src/image_loader.cpp)
 
 ## Add cmake target dependencies of the executable
 ## same as for the library above
@@ -143,8 +144,7 @@ include_directories(
 
 ## Specify libraries to link a library or executable target against
  target_link_libraries(multiagent_node
-   ${catkin_LIBRARIES} ${SBPL_LIBRARIES}
-)
+   ${catkin_LIBRARIES} ${SBPL_LIBRARIES} SDL SDL_image)
 
 #############
 ## Install ##

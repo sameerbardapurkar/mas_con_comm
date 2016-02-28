@@ -1,63 +1,9 @@
 #include <multiagent/multiagent.h>
+#include <stdlib.h>
 
-bool multiagent::get_exp_config(const char* filename,
-                    experiment_config &config)
+namespace utils
 {
-    config.mprim_filenames.clear();
-    config.start_x.clear();
-    config.start_y.clear();
-    config.start_z.clear();
-    config.start_theta.clear();
-    config.goal_x.clear();
-    config.goal_y.clear();
-    config.goal_z.clear();
-    config.goal_theta.clear();
-
-    FILE* fin = fopen(filename,"r");
-    if(!fin){
-        ROS_ERROR("file %s does not exist\n", filename);
-        return false;
-    }
-    // Motion primitive filenames.
-    std::vector<std::string> mprim_filenames;
-    fscanf(fin,"experiments:\n\n");
-    fscanf(fin, "  num_robots: %d\n", &config.num_robots);
-    // Read motion primitive files.
-    for (int i = 0; i < config.num_robots; ++i){
-        char mprim_filename[80];
-        if(fscanf(fin, "  primitive_file: %s", &mprim_filename) <= 0)
-            break;
-        config.mprim_filenames.push_back(std::string(mprim_filename));
-    }
-    int test_num = 0;
-    if(fscanf(fin,"  - test: %d\n", &test_num) <= 0)
-        return false;
-    for (int i = 0; i < config.num_robots; ++i){
-        double start_x, start_y, start_z, start_theta;
-        double goal_x, goal_y, goal_z, goal_theta;
-        if(fscanf(fin,"    start: %lf %lf %lf %lf\n", &start_x, &start_y, &start_z, &start_theta) <= 0)
-            return false;
-        if(fscanf(fin,"    goal: %lf %lf %lf %lf\n", &goal_x, &goal_y, &goal_z, &goal_theta) <= 0)
-            return false;
-        config.start_x.push_back(start_x);
-        config.start_y.push_back(start_y);
-        config.start_z.push_back(start_z);
-        config.start_theta.push_back(start_theta);
-        config.goal_x.push_back(goal_x);
-        config.goal_y.push_back(goal_y);
-        config.goal_z.push_back(goal_z);
-        config.goal_theta.push_back(goal_theta);
-    }
-    // Hardcoded footprint.
-    config.footprints.resize(config.num_robots);
-    for (int i = 0; i < config.num_robots; ++i)
-        {
-            config.footprints[i] = get_footprint();
-        }
-    return true;
-}
-
-std::vector<sbpl_2Dpt_t> multiagent::get_footprint()
+std::vector<sbpl_2Dpt_t> get_footprint(const int robot_id)
 {
     // TODO: hardcoded for now.
     std::vector<sbpl_2Dpt_t> footprint(5);
@@ -74,12 +20,93 @@ std::vector<sbpl_2Dpt_t> multiagent::get_footprint()
     return footprint;
 }
 
-void multiagent::print_exp_config(const experiment_config &config)
+std::string get_primitive_file(const int robot_id, const std::string &base_path)
 {
-    for(int i = 0; i < config.num_robots; ++i){
-        ROS_INFO("Robot %d start = (%f, %f, %f, %f) "
-                 "goal = (%f, %f, %f, %f) ", i,
-                 config.start_x[i], config.start_y[i], config.start_z[i], config.start_theta[i],
-                 config.goal_x[i], config.goal_y[i], config.goal_z[i], config.goal_theta[i]);
-      }
+    switch(robot_id)
+    {
+    case 1: return base_path + std::string("/config/robot1.mprim");
+        break;
+    case 2: return base_path + std::string("/config/robot2.mprim");
+        break;
+    }
+}  
+
 }
+
+bool multiagent::get_exp_config(const char* filename,                                
+                                const int desired_test_number,
+                                multiagent::experiment_config &config)
+{
+    config.mprim_filenames.clear();
+    FILE* fin = fopen(filename,"r");
+    if(!fin){
+        ROS_ERROR("file %s does not exist\n", filename);
+        return false;
+    }
+    // Motion primitive filenames.
+    std::vector<std::string> mprim_filenames;
+    fscanf(fin,"experiments:\n\n");
+    fscanf(fin, "  num_robots: %d\n", &config.num_robots);
+    config.mprim_filenames.clear();
+    config.footprints.clear();
+    // Read motion primitive files.
+    for (int i = 0; i < config.num_robots; ++i){
+        int robot_id;
+        if(fscanf(fin, "  robot_id: %d", &robot_id) <= 0)
+            break;        
+        config.mprim_filenames.push_back(utils::get_primitive_file(robot_id, base_folder_));
+        config.footprints.push_back(utils::get_footprint(robot_id));
+    }
+    int test_num = 0;
+    while(fin)
+    {
+        if(fscanf(fin,"  - test: %d\n", &test_num) <= 0)
+            return false;
+        char map_known[80];
+        char map_unknown[80];
+        if (fscanf(fin,"    map_known: %s", &map_known) <= 0)
+            return false;
+        if (fscanf(fin,"    map_unknown: %s", &map_unknown) <= 0)
+            return false;
+        config.map_known = std::string(map_known);
+        config.map_unknown = std::string(map_unknown);
+        config.map_width = 30;
+        config.map_height = 30;
+        if (test_num == desired_test_number)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void multiagent::get_random_start_goal_pairs(const int map_width,
+                                             const int map_height,
+                                             const int num_robots,
+                                             std::vector<std::vector<double> > &starts,
+                                             std::vector<std::vector<double> > &goals) const
+{    
+    //ROS_INFO("in get_random_start_goal map height: %d width: %d", map_height, map_width);
+    starts.clear();
+    goals.clear();
+    for (int i = 0; i < num_robots; i++){
+        std::vector<double> start(4, 0);
+        std::vector<double> goal(4, 0);        
+        const double start_theta = (2*M_PI/10) * (double)(std::rand()%10);
+        const double goal_theta = (2*M_PI/10) * (double)(std::rand()%10);
+        
+        start[0] = 0.5 + (std::rand() % map_width); // x
+        start[1] = 0.5 + (std::rand() % map_height); // y
+        start[2] = 0; // z
+        start[3] = start_theta;        
+        starts.push_back(start);
+        goal[0] = 0.5 + (std::rand() % map_width); // x
+        goal[1] = 0.5 + (std::rand() % map_height); // y
+        goal[2] = 0; // z
+        goal[3] = goal_theta;    
+        goals.push_back(goal);        
+        //ROS_INFO("Robot %d start: %2.2f, %2.2f, %2.2f, %2.2f", i, start[0], start[1], start[2], start[3]);
+        //ROS_INFO("Robot %d goal: %2.2f, %2.2f, %2.2f, %2.2f", i, goal[0], goal[1], goal[2], goal[3]);
+    }
+}
+
