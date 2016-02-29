@@ -208,7 +208,7 @@ int multiagent::takeStep()
             robots_[j].updateEnv(robots_[j].getCurrent(),robots_[j].getGoal(), robots_[i].getMap());
             const bool plan_succ = robots_[j].makePlan(plan_cost);
             robots_[i].advanceRobot();
-            ROS_INFO("Advanced Robot %d",i);
+            //ROS_INFO("Advanced Robot %d",i);
             max_plan_cost = std::max(max_plan_cost,plan_cost);
             //ROS_INFO("Max plan cost is %d",plan_cost);
 
@@ -318,7 +318,9 @@ int main(int argc, char **argv)
   std::vector<int> map_ids;
   map_ids.push_back(0);
   std::vector<int> all_num_robots;
+  all_num_robots.push_back(5);
   all_num_robots.push_back(2);
+  all_num_robots.push_back(5);
   // Run 10 random start/goal pairs for each config.
   const int num_starts_per_map = 10;
   multiagent_controller.start_experiments(num_starts_per_map,

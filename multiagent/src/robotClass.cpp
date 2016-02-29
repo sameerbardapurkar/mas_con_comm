@@ -212,12 +212,12 @@ bool robotClass::makePlan(int &solcost)
 void robotClass::advanceRobot()
 {
   std::vector<double> current_loc = stateIDtoXYCoord(solution_state_IDs[1]);
-  ROS_INFO("Solution state ID to go to is %d",solution_state_IDs[1]);
+  //ROS_INFO("Solution state ID to go to is %d",solution_state_IDs[1]);
   currentPose = locationToPose(current);
   traversedPath.poses.push_back(currentPose);
-  ROS_INFO("Advancing robot %d to x:%f y:%f theta:%f",id,current_loc[0],current_loc[1],current_loc[2]);
+  //ROS_INFO("Advancing robot %d to x:%f y:%f theta:%f",id,current_loc[0],current_loc[1],current_loc[2]);
   setCurrent(current_loc);
-  ROS_INFO("Current pose of robot %d is x:%f y:%f theta:%f",id,current[0],current[1],current[2]);
+  //ROS_INFO("Current pose of robot %d is x:%f y:%f theta:%f",id,current[0],current[1],current[2]);
   perimeterToFootprint();
 
   //ROS_INFO("Pose orientation is w:%f x:%f y:%f z:%f",currentPose.pose.orientation.w,currentPose.pose.orientation.x,currentPose.pose.orientation.y,currentPose.pose.orientation.z);

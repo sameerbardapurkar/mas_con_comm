@@ -27,13 +27,16 @@ std::vector<sbpl_2Dpt_t> get_footprint(const int robot_id)
 
 std::string get_primitive_file(const int robot_id, const std::string &base_path)
 {
-    switch(robot_id)
-    {
-    case 1: return base_path + std::string("/config/robot1.mprim");
-        break;
-    case 2: return base_path + std::string("/config/robot2.mprim");
-        break;
-    }
+  return base_path + std::string("/config/robot.mprim");
+  /*
+      switch(robot_id)
+      {
+      case 1: return base_path + std::string("/config/robot1.mprim");
+          break;
+      case 2: return base_path + std::string("/config/robot2.mprim");
+          break;
+      }
+  */
 }
 }
 
