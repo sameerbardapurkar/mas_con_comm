@@ -18,9 +18,10 @@ multiagent::multiagent()
   nh.param("backward_search",backwardSearch,false);
   nh.param("communication_epsilon",communicationEpsilon,100.0);
 
-  truemap = *(ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(true_map_topic));
-  commonmap = *(ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(common_map_topic));
-  ROS_INFO("SIZE OF MAP: %d", truemap.data.size());
+  //truemap = *(ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(true_map_topic));
+  //commonmap = *(ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(common_map_topic));
+  //commonmap.data.assign(commonmap.data.size(),0);
+  //ROS_INFO("SIZE OF MAP: %d", truemap.data.size());
 }
 
 void multiagent::start_experiments(const int num_starts_per_map,
@@ -32,10 +33,10 @@ void multiagent::start_experiments(const int num_starts_per_map,
     {
         // Read config yaml, based on map id and # of robots.
         multiagent::experiment_config config;
-        char fname[80];    
-        sprintf(fname, "%s/config/r_%dmap_%d.yaml", base_folder_.c_str(), 
+        char fname[80];
+        sprintf(fname, "%s/config/r_%dmap_%d.yaml", base_folder_.c_str(),
                 num_robots[expt_file_ctr], map_ids[expt_file_ctr]);
-        ROS_INFO("reading %s", fname);     
+        ROS_INFO("reading %s", fname);
         bool succ = false;
         succ = get_exp_config_header(fname, config);
         if (!succ)
@@ -57,24 +58,26 @@ void multiagent::start_experiments(const int num_starts_per_map,
             origin[0] = 0;
             origin[1] = 0;
             origin[2] = 0;
-            sprintf(map_fname, "%s/maps/%s", base_folder_.c_str(), config.map_known.c_str());
+            sprintf(map_fname, "%s/maps/%s", base_folder_.c_str(), config.map_known.c_str());  //change back to map_known
             ROS_INFO("setting common map from %s", map_fname);
             map_reader::loadMapFromFile(commonmap, map_fname, 0.1, // resolution
-                                        false, 0.65, // occupied_threshold
-                                        0.196, // free thresh
+                                        false, 0.1, // occupied_threshold
+                                        0.01, // free thresh
                                         origin,
-                                        true);    
+                                        true);
+            commonmap.data.assign(commonmap.data.size(),0);
+
             sprintf(map_fname, "%s/maps/%s", base_folder_.c_str(), config.map_unknown.c_str());
             ROS_INFO("setting true map from %s", map_fname);
             map_reader::loadMapFromFile(truemap, map_fname, 0.1, // resolution
-                                        false, 0.65, // occupied_threshold
-                                        0.196, // free thresh
+                                        false, 0.1, // occupied_threshold
+                                        0.01, // free thresh
                                         origin,
                                         true);
-
             total_robots = config.num_robots;
             robots_.resize(total_robots);
             commonMapPublisher_ = nh.advertise<nav_msgs::OccupancyGrid>("/mergedMap",1000);
+            exptTrueMapPublisher_ = nh.advertise<nav_msgs::OccupancyGrid>("/exptTrueMap",1000);
             startPosePublisher_.resize(total_robots);
             goalPosePublisher_.resize(total_robots);
             currentPosePublisher_.resize(total_robots);
@@ -82,18 +85,20 @@ void multiagent::start_experiments(const int num_starts_per_map,
             plannedPathPublisher_.resize(total_robots);
             traversedPathPublisher_.resize(total_robots);
             polygonPublisher_.resize(total_robots);
-            communicationRequired = true;
-  
+
+
             for (int i = 0; i < num_starts_per_map; ++i)
             {
-                set_up_experiment(config);        
+                communicationRequired = true;
+                set_up_experiment(config);
+
                 ROS_INFO("Successfully setup experiment.");
-                //simulate(); // UNCOMMENT SBPL FUNC
-                // WRITE RESULTS HERE.
-            }        
+                simulate(); // UNCOMMENT SBPL FUNC
+                              // WRITE RESULTS HERE.
+            }
         }
     }
-    ROS_INFO("Successfully setup experiment.");    
+    ROS_INFO("Successfully setup experiment.");
 }
 
 void multiagent::set_up_experiment(const multiagent::experiment_config &config)
@@ -121,11 +126,11 @@ void multiagent::set_up_experiment(const multiagent::experiment_config &config)
                 //         ROS_INFO("Robot %d goal: %2.2f, %2.2f, %2.2f, %2.2f", i, goal[0], goal[1], goal[2], goal[3]);
                 //     }
                 is_valid_experiment = true;
-            }        
-    }    
+            }
+    }
 }
 
-bool multiagent::is_exp_valid() 
+bool multiagent::is_exp_valid()
 {
     for(int i=0; i<total_robots; i++)
         {
@@ -134,12 +139,12 @@ bool multiagent::is_exp_valid()
             //reset all expended costs to 0
             robots_[i].resetExpendedCost();
             const bool succ = robots_[i].updateEnv(robots_[i].getCurrent(),robots_[i].getGoal(), robots_[i].getMap());
-            
+
             if (!succ)
             {
-                SBPL_INFO("update env return false");
+                ROS_INFO("update env return false");
                 return false;
-            }            
+            }
             int plan_cost = 0;
             const bool plan_succ = robots_[i].makePlan(plan_cost);
             if (!plan_succ)
@@ -150,10 +155,11 @@ bool multiagent::is_exp_valid()
 
 void multiagent::simulate()
 {
+  int max_plan_cost = -1;
   int count = 0;
-  while(count<1000)
+  while(max_plan_cost != 0) //Termination condition for robots
   {
-    ROS_INFO("Step: %d",count);
+    //ROS_INFO("Max Plan Cost is %d",max_plan_cost);
     if(communicationRequired)
     {
       if(count!=0)
@@ -161,6 +167,8 @@ void multiagent::simulate()
       resetCostsRequired = true;
       for(int i=0; i<total_robots; i++)
       {
+        //reset all starts of robots to current positions
+        robots_[i].setStart(robots_[i].getCurrent());
         //reset all maps to merged map
         robots_[i].setMap(commonmap,truemap);
         //reset all expended costs to 0
@@ -168,6 +176,7 @@ void multiagent::simulate()
         int plan_cost = 0;
         robots_[i].updateEnv(robots_[i].getCurrent(),robots_[i].getGoal(), robots_[i].getMap());
         const bool plan_success = robots_[i].makePlan(plan_cost);
+        ROS_INFO("Plan success is :%d",plan_success);
         ROS_INFO("setting original cost of robot %d to %d", i, plan_cost);
         robots_[i].setOriginalCost(plan_cost);
 
@@ -175,14 +184,16 @@ void multiagent::simulate()
       }
       communicationRequired = false;
 
-    takeStep();
+    max_plan_cost = takeStep();
     mergeMaps();
     commonMapPublisher_.publish(commonmap);
+    exptTrueMapPublisher_.publish(truemap);
     count++;
   }
 }
-void multiagent::takeStep()
+int multiagent::takeStep()
 {
+  int max_plan_cost = 0;
   for(int i=0; i<total_robots; i++)
   {
     int plan_cost = 0;
@@ -196,6 +207,11 @@ void multiagent::takeStep()
             eval_cost+=robots_[j].getExpendedCost();
             robots_[j].updateEnv(robots_[j].getCurrent(),robots_[j].getGoal(), robots_[i].getMap());
             const bool plan_succ = robots_[j].makePlan(plan_cost);
+            robots_[i].advanceRobot();
+            ROS_INFO("Advanced Robot %d",i);
+            max_plan_cost = std::max(max_plan_cost,plan_cost);
+            //ROS_INFO("Max plan cost is %d",plan_cost);
+
           }
         else
           {
@@ -209,16 +225,16 @@ void multiagent::takeStep()
         eval_cost += plan_cost;
         if(eval_cost > communicationEpsilon*robots_[j].getOriginalCost())
         {
-          ROS_INFO("Communication Epsilon is %f, for robot %d,%d, eval cost is %f, original cost is %f",
-                   communicationEpsilon, j, i, eval_cost, robots_[j].getOriginalCost());
+          ROS_INFO("Communication Epsilon is %f, for robot %d,%d, plan cost is %d, eval cost is %f, original cost is %f, expended_cost %f",
+                   communicationEpsilon, j, i, plan_cost, eval_cost, robots_[j].getOriginalCost(), robots_[j].getExpendedCost());
           communicationRequired = true;
         }
       }
     //ROS_INFO("Plan for robot %d costs %f",i,plan_cost);
     publish(i);
-    robots_[i].advanceRobot();
-    ros::Duration(0.25).sleep();
+    ros::Duration(0.01).sleep();
   }
+  return(max_plan_cost);
 
 }
 
@@ -237,6 +253,8 @@ bool multiagent::populateRobots(const multiagent::experiment_config &config,
                                 const std::vector<std::vector<double> > &starts,
                                 const std::vector<std::vector<double> > &goals)
 {
+  robots_.clear();
+  robots_.resize(total_robots);
   bool succ = false;
   for(int i=0; i<total_robots; i++)
   {
@@ -249,7 +267,7 @@ bool multiagent::populateRobots(const multiagent::experiment_config &config,
     // ROS_INFO("start: %f, %f, %f, %f", starts[i][0], starts[i][1], starts[i][2], starts[i][3]);
     // ROS_INFO("goal: %f, %f, %f, %f", goals[i][0], goals[i][1], goals[i][2], goals[i][3]);
     // ROS_INFO("mprimfile: %s", mprimfile.c_str());
-
+    commonmap.data.assign(commonmap.data.size(),0);
     robots_[i].Initialize(i, starts[i], goals[i], commonmap, truemap, mprimfile, footprint,
                           plannerEpsilon, allocatedTime, stopAfterFirstSolution, backwardSearch);
     // ROS_INFO("Initialized %d", i);
@@ -299,11 +317,11 @@ int main(int argc, char **argv)
   robotClass robot;
   std::vector<int> map_ids;
   map_ids.push_back(0);
-  std::vector<int> all_num_robots; 
+  std::vector<int> all_num_robots;
   all_num_robots.push_back(2);
   // Run 10 random start/goal pairs for each config.
-  const int num_starts_per_map = 10; 
-  multiagent_controller.start_experiments(num_starts_per_map, 
+  const int num_starts_per_map = 10;
+  multiagent_controller.start_experiments(num_starts_per_map,
                                           map_ids, all_num_robots);
   ros::spin();
   return 0;

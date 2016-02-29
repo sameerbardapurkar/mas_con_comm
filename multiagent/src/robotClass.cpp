@@ -14,6 +14,7 @@ void robotClass::Initialize(int i, std::vector<double> start, std::vector<double
   setGoal(goal);
   //ROS_INFO("Initialized goal state for robot with ID %d",i);
   setMap(map,truemap);
+  map.data.assign(map.data.size(),0);
   //ROS_INFO("Initialized maps for robot with ID %d",i);
   setPrims(mprimfile);
   //ROS_INFO("Loaded motion primitives file for robot with ID %d, file is %s",i,(mprimfile.c_str()));
@@ -26,7 +27,7 @@ void robotClass::Initialize(int i, std::vector<double> start, std::vector<double
   //ROS_INFO("calling initializePlanner");
   initializePlanner();
   //ROS_INFO("Initialized planner parameters for robot with ID %d",i);
-  //ROS_INFO("Initialized robot with ID %d",i);  
+  //ROS_INFO("Initialized robot with ID %d",i);
 }
 void robotClass::setPrims(std::string filename)
 {
@@ -64,7 +65,7 @@ void robotClass::setMap(nav_msgs::OccupancyGrid OccupancyMap, nav_msgs::Occupanc
 }
 bool robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, nav_msgs::OccupancyGrid map)
 {
-  //Now updating map  
+  //Now updating map
   int width = map.info.width;
   int height = map.info.height;
   for (int i=0;i<width;i++)
@@ -72,13 +73,47 @@ bool robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
     for (int j=0;j<height;j++)
     {
       env.UpdateCost(i,j,map.data[j*width + i]);
+      if (map.data[j*width + i] == 100)
+      {
+        for(int k = i-3; k<i+3; k++)
+        {
+          for(int l = j-3; l<j+3; l++)
+          {
+            if(k>0&&k<width&&l>0&&l<height)
+            {
+              //ROS_INFO("hi");
+              env.UpdateCost(k,l,std::max(65,int(map.data[l*width + k])));
+            }
+
+          }
+        }
+      }
     }
   }
   //updating start and goal
   ////ROS_INFO("Updating environment for robot %d",id);
-  start_id = env.SetStart(current[0],current[1],current[2]);
+  int sx,sy,st;
+  int gx,gy,gt;
+  env.PoseContToDisc(current[0],current[1],current[2],sx,sy,st);
+  env.PoseContToDisc(goal[0],goal[1],goal[2],gx,gy,gt);
+  if (env.IsValidConfiguration(sx,sy,st))
+  {
+    start_id = env.SetStart(current[0],current[1],current[2]);
+  }
+  else
+  {
+    return false;
+  }
+
   ////ROS_INFO("Setting start for robot %d",id);
-  goal_id = env.SetGoal(goal[0],goal[1],goal[2]);
+  if (env.IsValidConfiguration(gx,gy,gt))
+  {
+    goal_id = env.SetGoal(goal[0],goal[1],goal[2]);
+  }
+  else
+  {
+    return false;
+  }
   ////ROS_INFO("Setting goal for robot %d",id);
   if(start_id == -1 || goal_id == -1)
       return false;
@@ -98,14 +133,14 @@ void robotClass::initEnv()
   const char* cost_inscribed = std::string("cost_inscribed_thresh").c_str();
   env.~EnvironmentNAVXYTHETALAT();
   new (&env) EnvironmentNAVXYTHETALAT();
-  env.InitializeEnv (width, height, NULL/*mapdata, initializing to totally free map*/, 
+  env.InitializeEnv (width, height, NULL/*mapdata, initializing to totally free map*/,
                                        /*startx*/0,/*starty*/ 0, /*starttheta*/0,
                                        /*goalx*/ 0,/*goaly*/ 0,/*goaltheta*/ 0,
                                        0.0, 0.0, 0.0, perimeterptsV, cellsize_m,
                                        /*nominal_vel*/ 0.1, /*timetoturn45degsinplace_secs*/ 2,
                                        /*obsthresh*/ 100, sMotPrimFile);
   env.SetEnvParameter(cost_possibly_circumscribed,100);
-  env.SetEnvParameter(cost_inscribed,100);  
+  env.SetEnvParameter(cost_inscribed,100);
 }
 void robotClass::setPlannerParams(double epsilon, double allocated_time, bool firstsolution, bool backwardsearch)
 {
@@ -157,9 +192,9 @@ bool robotClass::makePlan(int &solcost)
     //ROS_INFO("Converted to xypath");
     for(int i = 0; i<xythetaPath.size(); i++)
     {
-    //ROS_INFO("x:%f  y:%f  theta:%f",xythetaPath[i].x,xythetaPath[i].y,xythetaPath[i].theta);
+    //ROS_INFO("For robot %d, x:%f  y:%f  theta:%f",id, xythetaPath[i].x,xythetaPath[i].y,xythetaPath[i].theta);
     }
-    //env.GetActionsFromStateIDPath(&solution_state_IDs, &action_list);
+    env.GetActionsFromStateIDPath(&solution_state_IDs, &action_list);
     plannedPath.poses.clear();
     for(int i = 0; i<solution_state_IDs.size(); i++)
     {
@@ -177,14 +212,18 @@ bool robotClass::makePlan(int &solcost)
 void robotClass::advanceRobot()
 {
   std::vector<double> current_loc = stateIDtoXYCoord(solution_state_IDs[1]);
+  ROS_INFO("Solution state ID to go to is %d",solution_state_IDs[1]);
   currentPose = locationToPose(current);
   traversedPath.poses.push_back(currentPose);
+  ROS_INFO("Advancing robot %d to x:%f y:%f theta:%f",id,current_loc[0],current_loc[1],current_loc[2]);
   setCurrent(current_loc);
+  ROS_INFO("Current pose of robot %d is x:%f y:%f theta:%f",id,current[0],current[1],current[2]);
   perimeterToFootprint();
-  //ROS_INFO("Advancing robot %d to x:%f y:%f theta:%f",id,current_loc[0],current_loc[1],current_loc[2]);
+
   //ROS_INFO("Pose orientation is w:%f x:%f y:%f z:%f",currentPose.pose.orientation.w,currentPose.pose.orientation.x,currentPose.pose.orientation.y,currentPose.pose.orientation.z);
   revealMap();
-  cost_expended += action_list[0].cost;
+  if(action_list.size()>0)
+    cost_expended += action_list[0].cost;
 }
 void robotClass::revealMap()
 {
@@ -196,9 +235,12 @@ void robotClass::revealMap()
     {
       for (int j = col - 20; j<col + 20; j++)
       {
-        if((map.data[j*map.info.width + i] < truemap.data[j*map.info.width + i])&&(i>0&&i<map.info.width&&j>0&&j<map.info.height))
+        if(i>0&&i<map.info.width&&j>0&&j<map.info.height)
         {
-          map.data[j*map.info.width + i] = truemap.data[j*map.info.width + i];
+          if((map.data[j*map.info.width + i] < truemap.data[j*map.info.width + i]))
+          {
+            map.data[j*map.info.width + i] = truemap.data[j*map.info.width + i];
+          }
         }
       }
     }
@@ -210,9 +252,7 @@ std::vector<double> robotClass::stateIDtoXYCoord(int state_id)
   int x_state, y_state, theta_state;
   double x_cont,y_cont,theta_cont;
   env.GetCoordFromState(state_id,x_state,y_state,theta_state);
-  x_cont = x_state*cellsize + 0.5*cellsize;
-  y_cont = y_state*cellsize + 0.5*cellsize;
-  theta_cont = theta_state*(M_PI/theta_disc);
+  env.PoseDiscToCont(x_state,y_state,theta_state,x_cont,y_cont,theta_cont);
   xypoint.push_back(x_cont);
   xypoint.push_back(y_cont);
   xypoint.push_back(theta_cont);

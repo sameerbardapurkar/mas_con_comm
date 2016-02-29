@@ -45,6 +45,7 @@ protected:
   std::vector<ros::Publisher> traversedPathPublisher_;
   std::vector<ros::Publisher> polygonPublisher_;
   ros::Publisher commonMapPublisher_;
+  ros::Publisher exptTrueMapPublisher_;
   double communicationEpsilon;
   ros::NodeHandle nh;
   bool communicationRequired;
@@ -59,14 +60,14 @@ protected:
   std::vector<sbpl_2Dpt_t> get_footprint();
   bool is_exp_valid();
   void publish(int i);
-  void takeStep();
+  int takeStep();
   void mergeMaps();
-  
+
 public:
   multiagent();
   void start_experiments(const int num_starts_per_map,
                          const std::vector<int> map_ids,
-                         const std::vector<int> all_num_robots);  
+                         const std::vector<int> all_num_robots);
   void pubdata();
   bool get_exp_config_header(const char* filename,
                              multiagent::experiment_config& config) const;
