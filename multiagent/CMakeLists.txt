@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(multiagent)
-
+set(CMAKE_CXX_FLAGS "-std=c++11")
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
@@ -135,7 +135,7 @@ include_directories(
 # add_dependencies(multiagent ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Declare a C++ executable
- add_executable(multiagent_node src/multiagent_node.cpp src/robotClass.cpp src/get_experiment.cpp 
+ add_executable(multiagent_node src/multiagent_node.cpp src/robotClass.cpp src/get_experiment.cpp
    src/image_loader.cpp)
 
 ## Add cmake target dependencies of the executable

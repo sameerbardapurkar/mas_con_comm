@@ -30,6 +30,7 @@ void robotClass::Initialize(int i, std::vector<double> start, std::vector<double
   //ROS_INFO("..done");
   setPlannerParams(epsilon,allocated_time,firstsolution,backwardsearch);
   //ROS_INFO("calling initializePlanner");
+
   initializePlanner();
   //ROS_INFO("Initialized planner parameters for robot with ID %d",i);
   //ROS_INFO("Initialized robot with ID %d",i);
@@ -77,7 +78,7 @@ bool robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
   {
     for (int j=0;j<height;j++)
     {
-      env.UpdateCost(i,j,map.data[j*width + i]);
+      env->UpdateCost(i,j,map.data[j*width + i]);
       if (map.data[j*width + i] == 100)
       {
         for(int k = i-5; k<i+5; k++)
@@ -87,7 +88,7 @@ bool robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
             if(k>0&&k<width&&l>0&&l<height)
             {
               //ROS_INFO("hi");
-              env.UpdateCost(k,l,std::max(int(100 - 10*abs(sqrt((k-i)*(k-i)+(l-j)*(l-j)))),int(map.data[l*width + k])));
+              env->UpdateCost(k,l,std::max(int(100 - 10*abs(sqrt((k-i)*(k-i)+(l-j)*(l-j)))),int(map.data[l*width + k])));
             }
 
           }
@@ -99,12 +100,12 @@ bool robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
   ////ROS_INFO("Updating environment for robot %d",id);
   int sx,sy,st;
   int gx,gy,gt;
-  env.PoseContToDisc(current[0],current[1],current[2],sx,sy,st);
-  env.PoseContToDisc(goal[0],goal[1],goal[2],gx,gy,gt);
-  if (env.IsValidConfiguration(sx,sy,st) && int(env.GetMapCost(sx,sy)) == 0)
+  env->PoseContToDisc(current[0],current[1],current[2],sx,sy,st);
+  env->PoseContToDisc(goal[0],goal[1],goal[2],gx,gy,gt);
+  if (env->IsValidConfiguration(sx,sy,st) && int(env->GetMapCost(sx,sy)) == 0)
   {
 
-    start_id = env.SetStart(current[0],current[1],current[2]);
+    start_id = env->SetStart(current[0],current[1],current[2]);
   }
   else
   {
@@ -112,9 +113,9 @@ bool robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
   }
 
   ////ROS_INFO("Setting start for robot %d",id);
-  if (env.IsValidConfiguration(gx,gy,gt)&& int(env.GetMapCost(gx,gy)) == 0)
+  if (env->IsValidConfiguration(gx,gy,gt)&& int(env->GetMapCost(gx,gy)) == 0)
   {
-    goal_id = env.SetGoal(goal[0],goal[1],goal[2]);
+    goal_id = env->SetGoal(goal[0],goal[1],goal[2]);
   }
   else
   {
@@ -137,16 +138,15 @@ void robotClass::initEnv()
   const char* sMotPrimFile = mprimfile.c_str();
   const char* cost_possibly_circumscribed = std::string("cost_possibly_circumscribed_thresh").c_str();
   const char* cost_inscribed = std::string("cost_inscribed_thresh").c_str();
-  env.~EnvironmentNAVXYTHETALAT();
-  new (&env) EnvironmentNAVXYTHETALAT();
-  env.InitializeEnv (width, height, NULL/*mapdata, initializing to totally free map*/,
+  env.reset(new EnvironmentNAVXYTHETALAT);
+  env->InitializeEnv (width, height, NULL/*mapdata, initializing to totally free map*/,
                                        /*startx*/0,/*starty*/ 0, /*starttheta*/0,
                                        /*goalx*/ 0,/*goaly*/ 0,/*goaltheta*/ 0,
                                        0.0, 0.0, 0.0, perimeterptsV, cellsize_m,
                                        /*nominal_vel*/ 0.1, /*timetoturn45degsinplace_secs*/ 2,
                                        /*obsthresh*/ 100, sMotPrimFile);
-  env.SetEnvParameter(cost_possibly_circumscribed,100);
-  env.SetEnvParameter(cost_inscribed,100);
+  env->SetEnvParameter(cost_possibly_circumscribed,100);
+  env->SetEnvParameter(cost_inscribed,100);
 }
 void robotClass::setPlannerParams(double epsilon, double allocated_time, bool firstsolution, bool backwardsearch)
 {
@@ -157,7 +157,7 @@ void robotClass::setPlannerParams(double epsilon, double allocated_time, bool fi
 }
 void robotClass::initializePlanner()
 {
-  planner = new ARAPlanner(&env, bBackwardSearch);
+  planner.reset(new ARAPlanner(env.get(), bBackwardSearch));
   planner->set_initialsolution_eps(plannerEpsilon);
   planner->set_search_mode(bSearchUntilFirstSolution);
 }
@@ -194,13 +194,13 @@ bool robotClass::makePlan(int &solcost)
       //ROS_INFO("Solution state ID %d",solution_state_IDs[i]);
     }
     xythetaPath.clear();
-    env.ConvertStateIDPathintoXYThetaPath(&solution_state_IDs,&xythetaPath);
+    env->ConvertStateIDPathintoXYThetaPath(&solution_state_IDs,&xythetaPath);
     //ROS_INFO("Converted to xypath");
     for(int i = 0; i<xythetaPath.size(); i++)
     {
     //ROS_INFO("For robot %d, x:%f  y:%f  theta:%f",id, xythetaPath[i].x,xythetaPath[i].y,xythetaPath[i].theta);
     }
-    env.GetActionsFromStateIDPath(&solution_state_IDs, &action_list);
+    env->GetActionsFromStateIDPath(&solution_state_IDs, &action_list);
     plannedPath.poses.clear();
     for(int i = 0; i<solution_state_IDs.size(); i++)
     {
@@ -262,8 +262,8 @@ std::vector<double> robotClass::stateIDtoXYCoord(int state_id)
   std::vector<double> xypoint;
   int x_state, y_state, theta_state;
   double x_cont,y_cont,theta_cont;
-  env.GetCoordFromState(state_id,x_state,y_state,theta_state);
-  env.PoseDiscToCont(x_state,y_state,theta_state,x_cont,y_cont,theta_cont);
+  env->GetCoordFromState(state_id,x_state,y_state,theta_state);
+  env->PoseDiscToCont(x_state,y_state,theta_state,x_cont,y_cont,theta_cont);
   xypoint.push_back(x_cont);
   xypoint.push_back(y_cont);
   xypoint.push_back(theta_cont);

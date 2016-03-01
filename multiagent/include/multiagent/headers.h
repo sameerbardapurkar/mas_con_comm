@@ -3,6 +3,7 @@
 #include<iostream>
 #include<string>
 #include<fstream>
+#include <memory>
 
 #ifndef ROS
 #define ROS
@@ -13,6 +14,7 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PolygonStamped.h>
+
 
 
 

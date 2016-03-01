@@ -70,7 +70,7 @@ protected:
   double cellsize;
   int theta_disc;
   std::vector<sbpl_2Dpt_t> perimeterptsV;
-  EnvironmentNAVXYTHETALAT env;
+  std::shared_ptr<EnvironmentNAVXYTHETALAT> env;
   double plannerEpsilon;
   double allocated_time_secs;
   int start_id;
@@ -84,7 +84,7 @@ protected:
   //Plan Specific Variables
   double cost_expended;
   int original_cost;
-  SBPLPlanner* planner;
+  std::shared_ptr<SBPLPlanner> planner;
 
   //ROS_STUFF
   geometry_msgs::PoseStamped currentPose;
