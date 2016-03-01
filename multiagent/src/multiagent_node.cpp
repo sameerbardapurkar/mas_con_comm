@@ -229,8 +229,8 @@ void multiagent::simulate()
 
     max_plan_cost = takeStep();
     mergeMaps();
-    //commonMapPublisher_.publish(commonmap);
-    //exptTrueMapPublisher_.publish(truemap);
+    commonMapPublisher_.publish(commonmap);
+    exptTrueMapPublisher_.publish(truemap);
     count++;
   }
 }
