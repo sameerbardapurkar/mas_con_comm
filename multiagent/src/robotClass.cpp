@@ -6,6 +6,11 @@ void robotClass::Initialize(int i, std::vector<double> start, std::vector<double
   cost_expended = 0;
   plannedPath.header.frame_id = std::string("map");
   traversedPath.header.frame_id = std::string("map");
+  traversedPath.poses.clear();
+  plannedPath.poses.clear();
+  solution_state_IDs.clear();
+  xythetaPath.clear();
+  action_list.clear();
   setStart(start);
   //ROS_INFO("Initialized start state for robot with ID %d",i);
   setCurrent(start);

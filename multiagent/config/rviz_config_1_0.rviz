@@ -66,7 +66,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_0/start_pose
+      Topic: /multiagent_node/eps1_0/robot_0/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -80,7 +80,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_0/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_0/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -94,7 +94,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_0/current_pose
+      Topic: /multiagent_node/eps1_0/robot_0/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -108,7 +108,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_1/start_pose
+      Topic: /multiagent_node/eps1_0/robot_1/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -122,7 +122,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_1/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_1/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -136,7 +136,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_1/current_pose
+      Topic: /multiagent_node/eps1_0/robot_1/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -150,7 +150,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_2/start_pose
+      Topic: /multiagent_node/eps1_0/robot_2/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -164,7 +164,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_2/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_2/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -178,7 +178,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_2/current_pose
+      Topic: /multiagent_node/eps1_0/robot_2/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -192,7 +192,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_3/start_pose
+      Topic: /multiagent_node/eps1_0/robot_3/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -206,7 +206,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_3/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_3/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -220,7 +220,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_3/current_pose
+      Topic: /multiagent_node/eps1_0/robot_3/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -234,7 +234,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_4/start_pose
+      Topic: /multiagent_node/eps1_0/robot_4/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -248,7 +248,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_4/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_4/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -262,7 +262,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_4/current_pose
+      Topic: /multiagent_node/eps1_0/robot_4/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -276,7 +276,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_5/start_pose
+      Topic: /multiagent_node/eps1_0/robot_5/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -290,7 +290,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_5/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_5/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -304,7 +304,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_5/current_pose
+      Topic: /multiagent_node/eps1_0/robot_5/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -318,7 +318,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_6/start_pose
+      Topic: /multiagent_node/eps1_0/robot_6/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -332,7 +332,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_6/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_6/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -346,7 +346,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_6/current_pose
+      Topic: /multiagent_node/eps1_0/robot_6/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -360,7 +360,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_7/start_pose
+      Topic: /multiagent_node/eps1_0/robot_7/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -374,7 +374,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_7/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_7/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -388,7 +388,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_7/current_pose
+      Topic: /multiagent_node/eps1_0/robot_7/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -402,7 +402,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_8/start_pose
+      Topic: /multiagent_node/eps1_0/robot_8/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -416,7 +416,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_8/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_8/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -430,7 +430,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_8/current_pose
+      Topic: /multiagent_node/eps1_0/robot_8/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -444,7 +444,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_9/start_pose
+      Topic: /multiagent_node/eps1_0/robot_9/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -458,7 +458,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_9/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_9/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -472,7 +472,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_9/current_pose
+      Topic: /multiagent_node/eps1_0/robot_9/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -486,7 +486,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_10/start_pose
+      Topic: /multiagent_node/eps1_0/robot_10/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -500,7 +500,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_10/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_10/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -514,7 +514,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_10/current_pose
+      Topic: /multiagent_node/eps1_0/robot_10/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -528,7 +528,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_11/start_pose
+      Topic: /multiagent_node/eps1_0/robot_11/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -542,7 +542,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_11/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_11/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -556,7 +556,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_11/current_pose
+      Topic: /multiagent_node/eps1_0/robot_11/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -570,7 +570,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_12/start_pose
+      Topic: /multiagent_node/eps1_0/robot_12/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -584,7 +584,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_12/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_12/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -598,7 +598,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_12/current_pose
+      Topic: /multiagent_node/eps1_0/robot_12/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -612,7 +612,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_13/start_pose
+      Topic: /multiagent_node/eps1_0/robot_13/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -626,7 +626,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_13/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_13/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -640,7 +640,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_13/current_pose
+      Topic: /multiagent_node/eps1_0/robot_13/current_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -654,7 +654,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_14/start_pose
+      Topic: /multiagent_node/eps1_0/robot_14/start_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -668,7 +668,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Arrow
-      Topic: /eps1_0/robot_14/goal_pose
+      Topic: /multiagent_node/eps1_0/robot_14/goal_pose
       Value: true
     - Alpha: 1
       Axes Length: 1
@@ -682,7 +682,7 @@ Visualization Manager:
       Shaft Length: 1
       Shaft Radius: 0.05
       Shape: Axes
-      Topic: /eps1_0/robot_14/current_pose
+      Topic: /multiagent_node/eps1_0/robot_14/current_pose
       Value: true
     - Class: rviz/Axes
       Enabled: true
@@ -703,7 +703,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_0/planned_path
+      Topic: /multiagent_node/eps1_0/robot_0/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -717,7 +717,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_0/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_0/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -731,7 +731,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_1/planned_path
+      Topic: /multiagent_node/eps1_0/robot_1/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -745,7 +745,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_1/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_1/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -759,7 +759,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_2/planned_path
+      Topic: /multiagent_node/eps1_0/robot_2/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -773,7 +773,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_2/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_2/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -787,7 +787,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_3/planned_path
+      Topic: /multiagent_node/eps1_0/robot_3/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -801,7 +801,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_3/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_3/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -815,7 +815,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_4/planned_path
+      Topic: /multiagent_node/eps1_0/robot_4/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -829,7 +829,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_4/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_4/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -843,7 +843,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_5/planned_path
+      Topic: /multiagent_node/eps1_0/robot_5/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -857,7 +857,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_5/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_5/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -871,7 +871,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_6/planned_path
+      Topic: /multiagent_node/eps1_0/robot_6/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -885,7 +885,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_6/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_6/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -899,7 +899,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_7/planned_path
+      Topic: /multiagent_node/eps1_0/robot_7/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -913,7 +913,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_7/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_7/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -927,7 +927,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_8/planned_path
+      Topic: /multiagent_node/eps1_0/robot_8/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -941,7 +941,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_8/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_8/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -955,7 +955,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_9/planned_path
+      Topic: /multiagent_node/eps1_0/robot_9/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -969,7 +969,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_9/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_9/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -983,7 +983,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_10/planned_path
+      Topic: /multiagent_node/eps1_0/robot_10/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -997,7 +997,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_10/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_10/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -1011,7 +1011,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_11/planned_path
+      Topic: /multiagent_node/eps1_0/robot_11/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -1025,7 +1025,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_11/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_11/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -1039,7 +1039,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_12/planned_path
+      Topic: /multiagent_node/eps1_0/robot_12/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -1053,7 +1053,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_12/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_12/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -1067,7 +1067,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_13/planned_path
+      Topic: /multiagent_node/eps1_0/robot_13/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -1081,7 +1081,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_13/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_13/traversed_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -1095,7 +1095,7 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_14/planned_path
+      Topic: /multiagent_node/eps1_0/robot_14/planned_path
       Value: true
     - Alpha: 1
       Buffer Length: 1
@@ -1109,112 +1109,112 @@ Visualization Manager:
         X: 0
         Y: 0
         Z: 0
-      Topic: /eps1_0/robot_14/traversed_path
+      Topic: /multiagent_node/eps1_0/robot_14/traversed_path
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_0/footprint
+      Topic: /multiagent_node/eps1_0/robot_0/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_1/footprint
+      Topic: /multiagent_node/eps1_0/robot_1/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_2/footprint
+      Topic: /multiagent_node/eps1_0/robot_2/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_3/footprint
+      Topic: /multiagent_node/eps1_0/robot_3/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_4/footprint
+      Topic: /multiagent_node/eps1_0/robot_4/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_5/footprint
+      Topic: /multiagent_node/eps1_0/robot_5/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_6/footprint
+      Topic: /multiagent_node/eps1_0/robot_6/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_7/footprint
+      Topic: /multiagent_node/eps1_0/robot_7/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_8/footprint
+      Topic: /multiagent_node/eps1_0/robot_8/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_9/footprint
+      Topic: /multiagent_node/eps1_0/robot_9/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_10/footprint
+      Topic: /multiagent_node/eps1_0/robot_10/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_11/footprint
+      Topic: /multiagent_node/eps1_0/robot_11/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_12/footprint
+      Topic: /multiagent_node/eps1_0/robot_12/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_13/footprint
+      Topic: /multiagent_node/eps1_0/robot_13/footprint
       Value: true
     - Alpha: 1
       Class: rviz/Polygon
       Color: 255; 170; 0
       Enabled: true
       Name: Polygon
-      Topic: /eps1_0/robot_14/footprint
+      Topic: /multiagent_node/eps1_0/robot_14/footprint
       Value: true
   Enabled: true
   Global Options:

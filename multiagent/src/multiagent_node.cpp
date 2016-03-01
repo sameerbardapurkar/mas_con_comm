@@ -19,7 +19,40 @@ multiagent::multiagent()
   nh.param("communication_epsilon",communicationEpsilon,100.0);
   nh.param("output_folder",outputFolder,std::string("/home/"));
   nh.param("test_id",testID,std::string("test"));
+  robots_.clear();
+  robots_.resize(total_number_of_robots);
+  startPosePublisher_.resize(total_number_of_robots);
+  goalPosePublisher_.resize(total_number_of_robots);
+  currentPosePublisher_.resize(total_number_of_robots);
+  mapPublisher_.resize(total_number_of_robots);
+  plannedPathPublisher_.resize(total_number_of_robots);
+  traversedPathPublisher_.resize(total_number_of_robots);
+  polygonPublisher_.resize(total_number_of_robots);
 
+  for(int i=0;i<total_number_of_robots;i++)
+  {
+    char currentPoseTopic[80];
+    sprintf(currentPoseTopic,"eps%s/robot_%d/current_pose",testID.c_str(),i);
+    currentPosePublisher_[i] = nh.advertise<geometry_msgs::PoseStamped>(currentPoseTopic,1000);
+    char startPoseTopic[80];
+    sprintf(startPoseTopic,"eps%s/robot_%d/start_pose",testID.c_str(),i);
+    startPosePublisher_[i] = nh.advertise<geometry_msgs::PoseStamped>(startPoseTopic,1000);
+    char goalPoseTopic[80];
+    sprintf(goalPoseTopic,"eps%s/robot_%d/goal_pose",testID.c_str(),i);
+    goalPosePublisher_[i] = nh.advertise<geometry_msgs::PoseStamped>(goalPoseTopic,1000);
+    char mapTopic[80];
+    sprintf(mapTopic,"eps%s/robot_%d/map",testID.c_str(),i);
+    mapPublisher_[i] = nh.advertise<nav_msgs::OccupancyGrid>(mapTopic,1000);
+    char plannedPathTopic[80];
+    sprintf(plannedPathTopic,"eps%s/robot_%d/planned_path",testID.c_str(),i);
+    plannedPathPublisher_[i] = nh.advertise<nav_msgs::Path>(plannedPathTopic,1000);
+    char traversedPathTopic[80];
+    sprintf(traversedPathTopic,"eps%s/robot_%d/traversed_path",testID.c_str(),i);
+    traversedPathPublisher_[i] = nh.advertise<nav_msgs::Path>(traversedPathTopic,1000);
+    char polygonTopic[80];
+    sprintf(polygonTopic,"eps%s/robot_%d/footprint",testID.c_str(),i);
+    polygonPublisher_[i] = nh.advertise<geometry_msgs::PolygonStamped>(polygonTopic,1000);
+  }
   //truemap = *(ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(true_map_topic));
   //commonmap = *(ros::topic::waitForMessage<nav_msgs::OccupancyGrid>(common_map_topic));
   //commonmap.data.assign(commonmap.data.size(),0);
@@ -61,7 +94,7 @@ void multiagent::start_experiments(const int num_starts_per_map,
         dataDumper.open(outputFilename.c_str(),std::ofstream::out | std::ofstream::trunc);
         dataDumper<<"Total Cost"<<","<<"Communication Events"<<endl;
         // test_nums start at 1, coz matlab.
-        for(int test_num = 1; test_num <= config.num_tests; test_num++)
+        for(int test_num = 1; test_num <= 5/*config.num_tests*/; test_num++)
         {
             succ = get_exp_config(fname, test_num, config);
             if (!succ)
@@ -90,21 +123,14 @@ void multiagent::start_experiments(const int num_starts_per_map,
                                         0.01, // free thresh
                                         origin,
                                         true);
-            total_robots = config.num_robots;
-            robots_.resize(total_robots);
+            total_robots = total_number_of_robots;
             char mergedMapTopic[80];
             sprintf(mergedMapTopic,"eps%s/mergedMap",testID.c_str());
             commonMapPublisher_ = nh.advertise<nav_msgs::OccupancyGrid>(mergedMapTopic,1000);
             char exptTrueMapTopic[80];
             sprintf(exptTrueMapTopic,"eps%s/exptTrueMap",testID.c_str());
             exptTrueMapPublisher_ = nh.advertise<nav_msgs::OccupancyGrid>(exptTrueMapTopic,1000);
-            startPosePublisher_.resize(total_robots);
-            goalPosePublisher_.resize(total_robots);
-            currentPosePublisher_.resize(total_robots);
-            mapPublisher_.resize(total_robots);
-            plannedPathPublisher_.resize(total_robots);
-            traversedPathPublisher_.resize(total_robots);
-            polygonPublisher_.resize(total_robots);
+
             srand (1);
 
             for (int i = 0; i < num_starts_per_map; ++i)
@@ -296,8 +322,8 @@ bool multiagent::populateRobots(const multiagent::experiment_config &config,
                                 const std::vector<std::vector<double> > &starts,
                                 const std::vector<std::vector<double> > &goals)
 {
-  robots_.clear();
-  robots_.resize(total_robots);
+  //robots_.clear();
+  //robots_.resize(total_robots);
   bool succ = false;
   for(int i=0; i<total_robots; i++)
   {
@@ -316,27 +342,7 @@ bool multiagent::populateRobots(const multiagent::experiment_config &config,
     // ROS_INFO("Initialized %d", i);
     //ROS_INFO("Initialized %d", i);
 
-    char currentPoseTopic[80];
-    sprintf(currentPoseTopic,"eps%s/robot_%d/current_pose",testID.c_str(),i);
-    currentPosePublisher_[i] = nh.advertise<geometry_msgs::PoseStamped>(currentPoseTopic,1000);
-    char startPoseTopic[80];
-    sprintf(startPoseTopic,"eps%s/robot_%d/start_pose",testID.c_str(),i);
-    startPosePublisher_[i] = nh.advertise<geometry_msgs::PoseStamped>(startPoseTopic,1000);
-    char goalPoseTopic[80];
-    sprintf(goalPoseTopic,"eps%s/robot_%d/goal_pose",testID.c_str(),i);
-    goalPosePublisher_[i] = nh.advertise<geometry_msgs::PoseStamped>(goalPoseTopic,1000);
-    char mapTopic[80];
-    sprintf(mapTopic,"eps%s/robot_%d/map",testID.c_str(),i);
-    mapPublisher_[i] = nh.advertise<nav_msgs::OccupancyGrid>(mapTopic,1000);
-    char plannedPathTopic[80];
-    sprintf(plannedPathTopic,"eps%s/robot_%d/planned_path",testID.c_str(),i);
-    plannedPathPublisher_[i] = nh.advertise<nav_msgs::Path>(plannedPathTopic,1000);
-    char traversedPathTopic[80];
-    sprintf(traversedPathTopic,"eps%s/robot_%d/traversed_path",testID.c_str(),i);
-    traversedPathPublisher_[i] = nh.advertise<nav_msgs::Path>(traversedPathTopic,1000);
-    char polygonTopic[80];
-    sprintf(polygonTopic,"eps%s/robot_%d/footprint",testID.c_str(),i);
-    polygonPublisher_[i] = nh.advertise<geometry_msgs::PolygonStamped>(polygonTopic,1000);
+
     //robots[i].setMap(map);
   }
   return true;
