@@ -13,7 +13,7 @@ public:
   bool updateEnv(std::vector<double> start, std::vector<double> goal, nav_msgs::OccupancyGrid map);
   void initEnv();
   void setPlannerParams(double epsilon, double allocated_time, bool firstsolution, bool backwardsearch);
-  void advanceRobot();
+  int advanceRobot();
   void revealMap();
   void initializePlanner();
   std::vector<double> stateIDtoXYCoord(int state_id);

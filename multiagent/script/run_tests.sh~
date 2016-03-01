@@ -1,0 +1,5 @@
+roslaunch multiagent test2robots.launch
+roslaunch multiagent test4robots.launch
+roslaunch multiagent test6robots.launch
+roslaunch multiagent test8robots.launch
+roslaunch multiagent test10robots.launch

@@ -19,24 +19,24 @@ std::vector<sbpl_2Dpt_t> get_footprint(const int robot_id)
     footprint[4].y = -0.425;
     for(int i = 0; i<footprint.size(); i++)
     {
-      footprint[i].x = 0.7*footprint[i].x;
-      footprint[i].y = 0.7*footprint[i].y;
+      footprint[i].x = 0.5*footprint[i].x;
+      footprint[i].y = 0.5*footprint[i].y;
     }
     return footprint;
 }
 
 std::string get_primitive_file(const int robot_id, const std::string &base_path)
 {
-  return base_path + std::string("/config/robot.mprim");
-  /*
-      switch(robot_id)
+      int robot_type = 0;
+      robot_type = robot_id%2;
+      switch(robot_type)
       {
-      case 1: return base_path + std::string("/config/robot1.mprim");
+      case 0: return base_path + std::string("/config/robot1.mprim");
           break;
-      case 2: return base_path + std::string("/config/robot2.mprim");
+      case 1: return base_path + std::string("/config/robot2.mprim");
           break;
       }
-  */
+
 }
 }
 
@@ -121,18 +121,19 @@ bool multiagent::get_exp_config(const char* filename,
     return false;
 }
 
-void multiagent::get_random_start_goal_pairs(const int map_width,
+void multiagent::get_random_start_goal_pair(const int map_width,
                                              const int map_height,
                                              const int num_robots,
-                                             std::vector<std::vector<double> > &starts,
-                                             std::vector<std::vector<double> > &goals) const
+                                             std::vector<double> &start,
+                                             std::vector<double> &goal) const
 {
     //ROS_INFO("in get_random_start_goal map height: %d width: %d", map_height, map_width);
-    starts.clear();
-    goals.clear();
-    for (int i = 0; i < num_robots; i++){
-        std::vector<double> start(4, 0);
-        std::vector<double> goal(4, 0);
+    start.clear();
+    start.resize(4,0);
+    goal.clear();
+    goal.resize(4,0);
+    //for (int i = 0; i < num_robots; i++){
+
         const double start_theta = (2*M_PI/10) * (double)(std::rand()%10);
         const double goal_theta = (2*M_PI/10) * (double)(std::rand()%10);
 
@@ -140,13 +141,13 @@ void multiagent::get_random_start_goal_pairs(const int map_width,
         start[1] = 0.5 + (std::rand() % map_height); // y
         start[2] = 0; // z
         start[3] = start_theta;
-        starts.push_back(start);
+
         goal[0] = 0.5 + (std::rand() % map_width); // x
         goal[1] = 0.5 + (std::rand() % map_height); // y
         goal[2] = 0; // z
         goal[3] = goal_theta;
-        goals.push_back(goal);
+
         //ROS_INFO("Robot %d start: %2.2f, %2.2f, %2.2f, %2.2f", i, start[0], start[1], start[2], start[3]);
         //ROS_INFO("Robot %d goal: %2.2f, %2.2f, %2.2f, %2.2f", i, goal[0], goal[1], goal[2], goal[3]);
-    }
+    //}
 }

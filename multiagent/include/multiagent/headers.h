@@ -2,6 +2,7 @@
 #define _MASTER
 #include<iostream>
 #include<string>
+#include<fstream>
 
 #ifndef ROS
 #define ROS

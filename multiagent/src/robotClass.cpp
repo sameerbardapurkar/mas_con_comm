@@ -75,14 +75,14 @@ bool robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
       env.UpdateCost(i,j,map.data[j*width + i]);
       if (map.data[j*width + i] == 100)
       {
-        for(int k = i-3; k<i+3; k++)
+        for(int k = i-5; k<i+5; k++)
         {
-          for(int l = j-3; l<j+3; l++)
+          for(int l = j-5; l<j+5; l++)
           {
             if(k>0&&k<width&&l>0&&l<height)
             {
               //ROS_INFO("hi");
-              env.UpdateCost(k,l,std::max(65,int(map.data[l*width + k])));
+              env.UpdateCost(k,l,std::max(int(100 - 10*abs(sqrt((k-i)*(k-i)+(l-j)*(l-j)))),int(map.data[l*width + k])));
             }
 
           }
@@ -96,8 +96,9 @@ bool robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
   int gx,gy,gt;
   env.PoseContToDisc(current[0],current[1],current[2],sx,sy,st);
   env.PoseContToDisc(goal[0],goal[1],goal[2],gx,gy,gt);
-  if (env.IsValidConfiguration(sx,sy,st))
+  if (env.IsValidConfiguration(sx,sy,st) && int(env.GetMapCost(sx,sy)) == 0)
   {
+
     start_id = env.SetStart(current[0],current[1],current[2]);
   }
   else
@@ -106,7 +107,7 @@ bool robotClass::updateEnv(std::vector<double> start, std::vector<double> goal, 
   }
 
   ////ROS_INFO("Setting start for robot %d",id);
-  if (env.IsValidConfiguration(gx,gy,gt))
+  if (env.IsValidConfiguration(gx,gy,gt)&& int(env.GetMapCost(gx,gy)) == 0)
   {
     goal_id = env.SetGoal(goal[0],goal[1],goal[2]);
   }
@@ -209,7 +210,7 @@ bool robotClass::makePlan(int &solcost)
   //ROS_INFO("Sol cost %d",solcost);
   return plan_success;
 }
-void robotClass::advanceRobot()
+int robotClass::advanceRobot()
 {
   std::vector<double> current_loc = stateIDtoXYCoord(solution_state_IDs[1]);
   //ROS_INFO("Solution state ID to go to is %d",solution_state_IDs[1]);
@@ -223,7 +224,12 @@ void robotClass::advanceRobot()
   //ROS_INFO("Pose orientation is w:%f x:%f y:%f z:%f",currentPose.pose.orientation.w,currentPose.pose.orientation.x,currentPose.pose.orientation.y,currentPose.pose.orientation.z);
   revealMap();
   if(action_list.size()>0)
+  {
     cost_expended += action_list[0].cost;
+    return action_list[0].cost;
+  }
+  return 0;
+
 }
 void robotClass::revealMap()
 {

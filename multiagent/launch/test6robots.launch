@@ -1,7 +1,7 @@
 <launch>
-  <node name="multiagent_node" pkg="multiagent" type="multiagent_node" output="screen" launch-prefix="gdb -ex run --args">
+  <node name="multiagent_node" pkg="multiagent" type="multiagent_node" output="screen">
     <param name="test_id" value="1_0"/>
-    <param name="total_robots" value="2" />
+    <param name="total_robots" value="6" />
     <param name="allocated_time" value="0.1" />
     <param name="true_map_topic" value="/truemap" />
     <param name="common_map_topic" value="/commonmap" />

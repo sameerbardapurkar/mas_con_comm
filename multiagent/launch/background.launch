@@ -1,0 +1,9 @@
+<launch>
+  <node name="true_map" pkg="map_server" type="map_server" args="$(find multiagent)/maps/office_unknown.pgm 0.1">
+    <remap from="map" to="/truemap" />
+  </node>
+  <node name="common_map" pkg="map_server" type="map_server" args="$(find multiagent)/maps/office_known.pgm 0.1">
+    <remap from="map" to="/commonmap" />
+  </node>
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find multiagent)/config/rviz_config_1_0.rviz"/>
+</launch>
