@@ -144,8 +144,8 @@ void multiagent::start_experiments(const int num_starts_per_map,
                 dataDumper<<total_cost<<","<<communication_events<<endl;
                               // WRITE RESULTS HERE.
             }
-            dataDumper.close();
         }
+            dataDumper.close();
     }
   }
 
