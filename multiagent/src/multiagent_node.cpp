@@ -94,7 +94,7 @@ void multiagent::start_experiments(const int num_starts_per_map,
         dataDumper.open(outputFilename.c_str(),std::ofstream::out | std::ofstream::trunc);
         dataDumper<<"Total Cost"<<","<<"Communication Events"<<endl;
         // test_nums start at 1, coz matlab.
-        for(int test_num = 1; test_num <= 5/*config.num_tests*/; test_num++)
+        for(int test_num = 1; test_num <= config.num_tests; test_num++)
         {
             succ = get_exp_config(fname, test_num, config);
             if (!succ)
@@ -376,7 +376,7 @@ int main(int argc, char **argv)
 
 
   // Run 10 random start/goal pairs for each config.
-  const int num_starts_per_map = 5;
+  const int num_starts_per_map = 10;
   multiagent_controller.start_experiments(num_starts_per_map,
                                           map_ids, all_num_robots,eps_array);
   ROS_INFO("Now Shutting Down");
